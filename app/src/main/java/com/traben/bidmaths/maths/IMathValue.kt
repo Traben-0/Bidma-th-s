@@ -17,6 +17,10 @@ interface IMathValue : IMathComponent {
             return Float.NaN
         }
 
+        override fun isValid(): Boolean {
+            return false
+        }
+
         override fun toString(): String {
             return "[InvalidValue: $why]"
         }
