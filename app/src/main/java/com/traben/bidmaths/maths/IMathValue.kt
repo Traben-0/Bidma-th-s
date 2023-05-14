@@ -17,6 +17,9 @@ interface IMathValue : IMathComponent {
             return Float.NaN
         }
 
+        override fun toString(): String {
+            return "[InvalidValue: $why]"
+        }
         override fun invert() {
         }
     }

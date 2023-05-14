@@ -137,6 +137,8 @@ class MathExpression(var components : List<IMathComponent>?) : IMathComponent {
 
             // if the expression is valid the next stages should all succeed and respect negative numbers in the order of operations
             // unlike some other math libraries.. looking at you MXParser.........................................................................................................................................................................................................hi
+            //MXParser thinks 2+1*-2 is (2+1)*-2 for some ungodly reason when it needs to be 2+(1*-2)
+
 
             //resolve powers into binary expression component
             val componentsPower = LinkedList<IMathComponent>()
@@ -192,9 +194,16 @@ class MathExpression(var components : List<IMathComponent>?) : IMathComponent {
 
             //here componentsFinal should only be a list containing 1 single IMathValue
             if(componentsFinal.size != 1){
-                return IMathValue.getInvalid("final didn't resolve to 1 component")
+                return IMathValue.getInvalid("final didn't resolve to 1 component: $componentsFinal")
             }
-            return if (componentsFinal.first is IMathValue ) componentsFinal.first as IMathValue else IMathValue.INVALID_VALUE
+
+            // this is a IMathValue either a MathNumber or a binary tree of MathBinaryExpressionComponents
+            // with each binary branch ending on a MathNumber
+
+            return if (componentsFinal.first is IMathValue )
+                componentsFinal.first as IMathValue
+            else
+                IMathValue.getInvalid("final wasn't a math value, likely invalid: ${componentsFinal.toString()}")
         }
     }
 }
