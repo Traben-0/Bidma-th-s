@@ -6,9 +6,9 @@ class MathBinaryExpressionComponent(
     var valueTwo : IMathValue
     ) : IMathValue   {
 
-    var isNegative = false
+    override var isNegative = false
 
-    public override fun invert(){
+    override fun invert(){
         isNegative = ! isNegative
     }
 
@@ -20,7 +20,24 @@ class MathBinaryExpressionComponent(
     }
 
 
-    override fun get(): Float {
-        TODO("Not yet implemented")
+    override fun isValid(): Boolean {
+        if(valueOne.isValid() && valueTwo.isValid()) {
+            //check divide by 0
+            return !(operator == MathOperator.DIVIDE && valueTwo.getValue() == 0f)
+        }
+        return false
     }
+
+    var hasBrackets = false
+    override fun setBrackets() {
+        hasBrackets = true
+    }
+
+    override fun getValue(): Float {
+        val result = operator.performOperation(valueOne,valueTwo)
+        return if(isNegative) -result else result
+    }
+
+
+
 }

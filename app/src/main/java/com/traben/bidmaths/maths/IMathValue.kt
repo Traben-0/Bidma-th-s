@@ -1,8 +1,16 @@
 package com.traben.bidmaths.maths
 
-interface IMathValue : IMathComponent {
-    fun get(): Float
+interface IMathValue : ParsedMathEquation.IMathComponent {
+
+    var isNegative: Boolean
     fun invert()
+
+    fun isValid() : Boolean {return false}
+
+    fun setBrackets()
+
+    fun getValue() : Float
+
 
     companion object{
 
@@ -13,17 +21,26 @@ interface IMathValue : IMathComponent {
     }
 
     class InvalidValue(val why : String) : IMathValue{
-        override fun get(): Float {
-            return Float.NaN
-        }
 
         override fun isValid(): Boolean {
             return false
         }
 
+        override fun setBrackets() {
+        }
+
+        override fun getValue(): Float {
+            return  Float.NaN
+        }
+
         override fun toString(): String {
             return "[InvalidValue: $why]"
         }
+
+        override var isNegative: Boolean
+            get() = false
+            set(value) {}
+
         override fun invert() {
         }
     }
