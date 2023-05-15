@@ -2,8 +2,10 @@ package com.traben.bidmaths.maths
 
 import android.content.Context
 import android.view.View
+import android.view.ViewParent
 import com.traben.bidmaths.maths.views.MathBinaryExpressionView
 import kotlin.math.absoluteValue
+import kotlin.math.roundToInt
 import kotlin.random.Random
 
 class MathBinaryExpressionComponent(
@@ -18,12 +20,7 @@ class MathBinaryExpressionComponent(
         isNegative = !isNegative
     }
 
-    public fun isThisOperationReady(): Boolean {
-        //todo possibly further actions here dont simplify
-        if (valueOne is MathBinaryExpressionComponent || valueTwo is MathBinaryExpressionComponent)
-            return false
-        return true
-    }
+
 
 
     override fun isValid(): Boolean {
@@ -46,29 +43,56 @@ class MathBinaryExpressionComponent(
         return if (isNegative) -result else result
     }
 
-    override var resolved: Float? = null
+    var resolved: Float? = null
 
-    override fun resolve() {
-        TODO("Not yet implemented")
+    override fun isResolved(): Boolean {
+        return resolved != null
+    }
+
+    fun canResolve() : Boolean{
+        return valueOne.isResolved() && valueTwo.isResolved()
+    }
+    fun resolve(parentView : ViewParent?) {
+        if(canResolve()) {
+            resolved = getValue()
+            if (parentView is MathBinaryExpressionView) {
+                parentView.update()
+            } else {
+                println("done")
+            }
+        }else{
+            println("nope")
+        }
     }
 
     override fun toString(): String {
         return if (hasBrackets) "($valueOne$operator$valueTwo)" else "$valueOne$operator$valueTwo"
     }
 
+
     override fun getAsView(context: Context): View {
-        val view = MathBinaryExpressionView(context)
-        view.set(this)
-        return view
+        if (isResolved()) {
+            return MathNumber(resolved!!).getAsView(context)
+        }
+
+        return MathBinaryExpressionView(this,context)
     }
 
     companion object {
 
         fun getRandom(difficulty: Int, maxDepth: Int): MathBinaryExpressionComponent {
+
+            val op = MathOperator.getRandom(difficulty)
+            //simplify it to not get stupid big powers
+            val second = if(op== MathOperator.POWER){
+                genRandomValueSimple()
+            }else{
+                genRandomValue(difficulty, maxDepth)
+            }
             val comp = MathBinaryExpressionComponent(
                 genRandomValue(difficulty, maxDepth),
-                MathOperator.getRandom(difficulty),
-                genRandomValue(difficulty, maxDepth)
+                op,
+                second
             )
 
             val addBrackets: Boolean = Random.nextInt(2) == 1
@@ -97,7 +121,26 @@ class MathBinaryExpressionComponent(
 
         }
 
+        private fun genRandomValueSimple(): IMathValue {
+            val maxDepth = 0
+            val difficulty = 0
+
+            //determines whether to end the nesting with a value or continue, the one that is more likely is determined by max depth
+            return if (Random.nextInt(6) == 1) {
+                //less likely
+                getRandom(difficulty, maxDepth-1)
+            } else {
+                //more likely
+                MathNumber(genNumberByDifficulty(difficulty))
+
+            }
+
+        }
+
         private fun genNumberByDifficulty(difficulty: Int): Float {
+            if(difficulty==0){
+                return ((Random.nextFloat()*2-1) * 10).roundToInt().toFloat()
+            }
             //get a number arbitrarily large set by difficulty
             var number : Float = ((Random.nextFloat()*2-1) * (difficulty*10)).toInt().toFloat()
 

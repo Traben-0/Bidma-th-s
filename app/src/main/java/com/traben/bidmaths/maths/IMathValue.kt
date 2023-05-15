@@ -15,10 +15,10 @@ interface IMathValue : ParsedMathEquation.IMathComponent {
 
     fun getValue() : Float
 
-    var resolved: Float?
-    fun isResolved ():Boolean {return resolved != null}
 
-    fun resolve()
+    fun isResolved ():Boolean {return false}
+
+
 
     fun getAsView(context: Context) : View
     companion object{
@@ -42,10 +42,7 @@ interface IMathValue : ParsedMathEquation.IMathComponent {
             return  Float.NaN
         }
 
-        override var resolved: Float? = null
 
-        override fun resolve() {
-        }
 
         override fun getAsView(context: Context): View {
             return TextView(context)

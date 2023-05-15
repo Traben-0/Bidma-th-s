@@ -4,10 +4,12 @@ import android.content.Context;
 import android.util.AttributeSet;
 import android.view.LayoutInflater
 import android.widget.LinearLayout
+import android.widget.TextView
 import com.traben.bidmaths.databinding.MathBinaryExpressionBinding
 import com.traben.bidmaths.databinding.MathNumberBinding
 
-class MathBracketView @JvmOverloads constructor(
+class MathBracketView (
+        isLeft: Boolean,
         context: Context,
         attrs: AttributeSet? = null,
         defStyleAttr: Int = 0
@@ -18,10 +20,7 @@ class MathBracketView @JvmOverloads constructor(
         init {
                 val inflater = LayoutInflater.from(context)
                 binding = MathNumberBinding.inflate(inflater, this, true)
+                binding.number.text = if(isLeft) "(" else ")"
         }
 
-        fun setLeft(isLeft: Boolean) : MathBracketView {
-                binding.number.text = if(isLeft) "(" else ")"
-                return this
-        }
 }

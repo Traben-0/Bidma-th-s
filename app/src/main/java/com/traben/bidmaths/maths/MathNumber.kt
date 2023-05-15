@@ -12,7 +12,6 @@ class MathNumber(var number : Float) : IMathValue {
     }
 
     override fun getValue(): Float {
-        if(isResolved()) resolved
         return if (isNegative) -number else number
     }
 
@@ -21,6 +20,9 @@ class MathNumber(var number : Float) : IMathValue {
         hasBrackets = true
     }
 
+    override fun isResolved(): Boolean {
+        return true
+    }
     override fun toString(): String {
         val num = getValue()
         val string = if (num % 1.0f != 0f)
@@ -36,16 +38,9 @@ class MathNumber(var number : Float) : IMathValue {
         isNegative = ! isNegative
     }
 
-    override var resolved: Float? = null
-
-    override fun resolve() {
-        TODO("Not yet implemented")
-    }
 
     override fun getAsView(context: Context): View {
-        val view = MathNumberView(context)
-        view.setNumber(this)
-        return view
+        return MathNumberView(this, context)
     }
 
 }

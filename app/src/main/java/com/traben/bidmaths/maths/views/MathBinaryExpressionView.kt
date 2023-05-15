@@ -2,33 +2,41 @@ package com.traben.bidmaths.maths.views;
 
 import android.content.Context;
 import android.util.AttributeSet;
+import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
+import android.view.animation.Animation
+import android.view.animation.AnimationUtils
 import android.widget.LinearLayout
+import androidx.core.view.size
+import com.traben.bidmaths.R
 import com.traben.bidmaths.databinding.MathBinaryExpressionBinding
 import com.traben.bidmaths.maths.MathBinaryExpressionComponent
 import com.traben.bidmaths.maths.MathOperator
 
-class MathBinaryExpressionView @JvmOverloads constructor(
+class MathBinaryExpressionView (
+        private val expression: MathBinaryExpressionComponent,
         context: Context,
         attrs: AttributeSet? = null,
         defStyleAttr: Int = 0
 ) : LinearLayout(context, attrs, defStyleAttr) {
 
-        private val binding: MathBinaryExpressionBinding
+        val binding: MathBinaryExpressionBinding
 
         init {
                 val inflater = LayoutInflater.from(context)
                 binding = MathBinaryExpressionBinding.inflate(inflater, this, true)
 
+                setOperator(expression.operator)
+                update()
+
+
         }
 
-        lateinit var expression: MathBinaryExpressionComponent
 
-        fun set(expressionComponent: MathBinaryExpressionComponent){
-                expression = expressionComponent
+
+        fun update(){
                 setLeft(expression.valueOne.getAsView(context))
-                setOperator(expression.operator)
                 setRight(expression.valueTwo.getAsView(context))
         }
 
@@ -37,19 +45,52 @@ class MathBinaryExpressionView @JvmOverloads constructor(
         private fun setLeft(view: View) {
                 binding.left.removeAllViews()
                 if(expression.hasBrackets)
-                        binding.left.addView(MathBracketView(context).setLeft(true))
+                        binding.left.addView(MathBracketView(true,context))
                 binding.left.addView(view)
         }
 
 
         private fun setOperator(operator: MathOperator) {
                 binding.operator.text = operator.toStringPretty()
+
+                val animation = AnimationUtils.loadAnimation(context, R.anim.pulse_wobble)
+                val randomDuration = (500..1500).random() // Random duration between 500 and 1500 milliseconds
+                animation.duration = randomDuration.toLong()
+                binding.operator.startAnimation(animation)
+
+                binding.operator.setOnClickListener {
+                        if(expression.canResolve()) {
+                                val animation2 =
+                                        AnimationUtils.loadAnimation(context, R.anim.resolve_math)
+                                animation2.setAnimationListener(object :
+                                        Animation.AnimationListener {
+                                        override fun onAnimationStart(animation: Animation?) {}
+                                        override fun onAnimationEnd(animation: Animation?) {
+                                                expression.resolve(parent?.parent?.parent)
+                                        }
+                                        override fun onAnimationRepeat(animation: Animation?) {}
+                                })
+                                binding.container.startAnimation(animation2)
+                        }else{
+                                val animation2 =
+                                        AnimationUtils.loadAnimation(context, R.anim.shake)
+                                binding.container.startAnimation(animation2)
+                        }
+                        //expression.resolve(parent?.parent?.parent)
+                }
         }
         private fun setRight(view: View) {
                 binding.right.removeAllViews()
+                if(expression.operator == MathOperator.POWER){
+                        view.y -=25
+                        view.scaleY = 0.75f
+                        view.scaleX = 0.75f
+                        view.minimumWidth=0
+                        //view.setOnClickListener { expression.resolve(parent?.parent?.parent) }
+                }
                 binding.right.addView(view)
                 if(expression.hasBrackets)
-                        binding.left.addView(MathBracketView(context).setLeft(false))
+                        binding.right.addView(MathBracketView(false,context))
         }
 
 }
