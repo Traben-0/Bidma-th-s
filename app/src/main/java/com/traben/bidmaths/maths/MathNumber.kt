@@ -17,7 +17,13 @@ class MathNumber(var number : Float) : IMathValue {
     }
 
     override fun toString(): String {
-        return "[#:${getValue()}]"
+        val num = getValue()
+        val string = if (num % 1.0f != 0f)
+             String.format("%s", num)
+        else
+             String.format("%.0f", num)
+
+        return if(hasBrackets) "($string)" else string
     }
     override var isNegative = false
 

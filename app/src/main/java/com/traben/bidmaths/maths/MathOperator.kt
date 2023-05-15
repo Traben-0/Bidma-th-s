@@ -1,6 +1,7 @@
 package com.traben.bidmaths.maths
 
 import kotlin.math.pow
+import kotlin.random.Random
 
 enum class MathOperator : ParsedMathEquation.IMathComponent {
     ADD,
@@ -37,8 +38,32 @@ enum class MathOperator : ParsedMathEquation.IMathComponent {
 
     }
 
+    override fun toString(): String {
+        return when(this){
+            ADD-> "+"
+            SUBTRACT-> "-"
+            MULTIPLY-> "*"
+            DIVIDE-> "/"
+            POWER-> "^"
+            else -> "!!"
+        }
+    }
+
+
 
     companion object {
+
+        fun getRandom(difficulty: Int) : MathOperator{
+            //todo factor in difficulty
+            return when(Random.nextInt(5)){
+                0-> ADD
+                1-> SUBTRACT
+                2-> MULTIPLY
+                3-> DIVIDE
+                4-> POWER
+                else -> ADD
+            }
+        }
         fun get(testChar: Char) : MathOperator{
             return when(testChar){
                 '+'-> ADD

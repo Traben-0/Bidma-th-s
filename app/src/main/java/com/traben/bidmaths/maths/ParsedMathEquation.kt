@@ -3,15 +3,46 @@ package com.traben.bidmaths.maths
 import java.util.*
 
 
-class ParsedMathEquation(private val validExpression: IMathValue?){
+class ParsedMathEquation( val validExpression: IMathValue?){
 
 
     fun getAnswer() : Float{
         return validExpression?.getValue() ?: Float.NaN
     }
 
+    fun isValid() : Boolean {
+        return !getAnswer().isNaN()
+    }
+
 
     companion object{
+
+        fun createRandomExpression( difficulty : Int,size : Int) : ParsedMathEquation{
+            return  createRandomExpression(difficulty,size,1)
+        }
+        private fun createRandomExpression( difficulty : Int,size : Int, iterations : Int) : ParsedMathEquation{
+            //max 10 attempts at generating a valid random expression
+            if(iterations > 10) return ParsedMathEquation(null)
+
+            val diff = difficulty.coerceAtLeast(1).coerceAtMost(20)
+            val depth = size.coerceAtLeast(0).coerceAtMost(3)
+            //create a random structures expression
+            val generatedButNotValid = MathBinaryExpressionComponent.getRandom(diff,depth)
+            //now simply abandon it as it is likely not valid
+            // extract its string expression value and then validate that
+            generatedButNotValid.hasBrackets=false
+            val stringExpression = generatedButNotValid.toString()
+
+            val possiblyValidExpression = parseExpressionAndPrepare(stringExpression)
+            return if(possiblyValidExpression.isValid()){
+                possiblyValidExpression
+            }else{
+                //loop if was invalid
+                println("Failed #$iterations: $stringExpression")
+                createRandomExpression(difficulty,size,iterations+1)
+            }
+        }
+
         fun parseExpressionAndPrepare(expression : String) : ParsedMathEquation{
             if(expression.isBlank()){
                 return ParsedMathEquation(null)

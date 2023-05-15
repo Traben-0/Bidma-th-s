@@ -107,4 +107,14 @@ class MathParserUnitTests {
 //        FAILED: com.traben.bidmaths.maths.MathBinaryExpressionComponent@626abbd0
     }
 
+
+    @Test
+    fun random_expression_creation_isCorrect() {
+        for (i in 1..25){
+            val exp =ParsedMathEquation.createRandomExpression(i,i)
+            println("test was: ${exp.validExpression}")
+            assertTrue(exp.isValid())
+        }
+    }
+
 }
