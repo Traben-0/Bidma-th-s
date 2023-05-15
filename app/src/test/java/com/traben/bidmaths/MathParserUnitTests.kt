@@ -69,6 +69,8 @@ class MathParserUnitTests {
         assertEquals(27f, testAnswer("3^3"))
         assertEquals(54f, testAnswer("2*3^3"))
         assertEquals(-0.25f, testAnswer("-2^-2"))
+
+        assertEquals(-0f, testAnswer("-150^-147"))
         // test failed first attempt, this was actually a result of treating -2^-2 as (-2)^-2 when it is technically -(2^-2)
         // test passed on second attempt
     }
@@ -92,7 +94,8 @@ class MathParserUnitTests {
     fun invalid_expression_detection_isCorrect() {
         assertTrue(doesExpressionFail("2+"))// incomplete
         assertTrue(doesExpressionFail("2/0")) //   /0
-        assertTrue(doesExpressionFail("two+1"))/// words
+        assertTrue(doesExpressionFail("2/-0")) //   /-0
+        assertTrue(doesExpressionFail("two+1"))// words
         assertTrue(doesExpressionFail("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."))
         assertTrue(doesExpressionFail("10*4-2*(4^2/4)/2/0.5+9)"))//extra closing bracket
         assertTrue(doesExpressionFail("10*4-2*(4^2/4)/(2/0.5+9"))//extra open bracket
@@ -110,9 +113,9 @@ class MathParserUnitTests {
 
     @Test
     fun random_expression_creation_isCorrect() {
-        for (i in 1..25){
-            val exp =ParsedMathEquation.createRandomExpression(i,i)
-            println("test was: ${exp.validExpression}")
+        for (i in 1..250){
+            val exp =ParsedMathEquation.createRandomExpression(i)
+            println("random output was: ${exp.validExpression}")
             assertTrue(exp.isValid())
         }
     }

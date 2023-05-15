@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.navigation.fragment.findNavController
 import com.traben.bidmaths.databinding.FragmentActivityBinding
+import com.traben.bidmaths.maths.ParsedMathEquation
 
 /**
  * A simple [Fragment] subclass as the second destination in the navigation.
@@ -25,9 +26,20 @@ class ActivityFragment : Fragment() {
     ): View? {
 
         _binding = FragmentActivityBinding.inflate(inflater, container, false)
+
+
+
+        equation = ParsedMathEquation.createRandomExpression(3)
+        binding.content.removeAllViews()
+        binding.content.addView(context?.let { equation.getAsView(it) })
+
+        binding.buttonSecond.text = equation.toStringPretty()
+
         return binding.root
 
     }
+
+    lateinit var equation : ParsedMathEquation
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

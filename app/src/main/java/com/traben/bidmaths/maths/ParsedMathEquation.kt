@@ -1,5 +1,8 @@
 package com.traben.bidmaths.maths
 
+import android.content.Context
+import android.view.View
+import android.widget.TextView
 import java.util.*
 
 
@@ -14,21 +17,39 @@ class ParsedMathEquation( val validExpression: IMathValue?){
         return !getAnswer().isNaN()
     }
 
+    override fun toString(): String {
+        //apply common notation for multiplying with brackets
+        return validExpression?.toString()?.replace("*(","(") ?: "NaN"
+    }
+
+    fun toStringPretty(): String {
+        //apply common notation for multiplying with brackets
+        return validExpression?.toString()?.replace("*","×")?.replace("/","÷")?.replace("×(","(") ?: "NaN"
+    }
+
+    fun getAsView(context: Context) : View {
+        return validExpression?.getAsView(context) ?: TextView(context)
+    }
+
 
     companion object{
 
-        fun createRandomExpression( difficulty : Int,size : Int) : ParsedMathEquation{
-            return  createRandomExpression(difficulty,size,1)
-        }
-        private fun createRandomExpression( difficulty : Int,size : Int, iterations : Int) : ParsedMathEquation{
-            //max 10 attempts at generating a valid random expression
-            if(iterations > 10) return ParsedMathEquation(null)
-
+        fun createRandomExpression( difficulty : Int) : ParsedMathEquation{
             val diff = difficulty.coerceAtLeast(1).coerceAtMost(20)
-            val depth = size.coerceAtLeast(0).coerceAtMost(3)
-            //create a random structures expression
-            val generatedButNotValid = MathBinaryExpressionComponent.getRandom(diff,depth)
-            //now simply abandon it as it is likely not valid
+            val depth = 1//todo this is the primary controller of equation length  1 = perfect balance but could go one higher
+            return  createRandomExpression(diff,depth,1)
+        }
+        private fun createRandomExpression( difficulty : Int,depth : Int, iterations : Int) : ParsedMathEquation{
+            //max 10 attempts at generating a valid random expression
+            if(iterations > 10){
+                // i'm not perfect lets pick from some known good examples as this is hopefully a rare case
+                println("Failed to create random expression 10 times, defaulting to known expressions")
+                return parseExpressionAndPrepare(listOfGoodBackupExpressions.random())
+            }
+
+            //create a random structured expression
+            val generatedButNotValid = MathBinaryExpressionComponent.getRandom(difficulty,depth)
+            //now simply abandon it as it is likely not order of operations valid
             // extract its string expression value and then validate that
             generatedButNotValid.hasBrackets=false
             val stringExpression = generatedButNotValid.toString()
@@ -39,7 +60,8 @@ class ParsedMathEquation( val validExpression: IMathValue?){
             }else{
                 //loop if was invalid
                 println("Failed #$iterations: $stringExpression")
-                createRandomExpression(difficulty,size,iterations+1)
+                //failures are expected as we construct them lazily and could easily have a divide by 0 result in the equation
+                createRandomExpression(difficulty,depth,iterations+1)
             }
         }
 
@@ -48,13 +70,14 @@ class ParsedMathEquation( val validExpression: IMathValue?){
                 return ParsedMathEquation(null)
             }
             try {//just in case
-                val parsedResult = parseExpression(expression, false)
+                val parsedResult : IMathValue = parseExpression(expression, false)
                 if(parsedResult.isValid()){
                     return ParsedMathEquation(parsedResult)
                 }else {
                     println("FAILED: $parsedResult")
                 }
             }catch(e: java.lang.Exception){
+                e.printStackTrace()
                 println("FAILED: ${e.cause}")
             }
             return ParsedMathEquation(null)
@@ -67,6 +90,22 @@ class ParsedMathEquation( val validExpression: IMathValue?){
     }
     interface IMathComponent
 }
+
+private val listOfGoodBackupExpressions = listOf(
+    "6/2(1+2)",
+    "10*4-2*(4^2/4)/2/0.5+9",
+    "-10/(20/4*5/5)*8-2",
+    "8/2(2+2)",
+    "30/29-99*(-120^116)",
+    "33*-131*-80-(96*-98)",
+    "-115/20*-113/(-25/50)",
+    "(37+-56)/(106-129)/147",
+    "(-16^2)+-67-74",
+    "35--76^43*26",
+    "(8/3)*(19^-13)",
+    "((-3^9^3)--2)+(-7+8)",
+    "7*(-10/9)/3-(-12-16)")
+
 private fun parseExpression(expression : String, inBrackets : Boolean) : IMathValue{
     //clear spaces
     val formattedExpression = expression.replace(" ","")
@@ -105,7 +144,7 @@ private fun parseExpression(expression : String, inBrackets : Boolean) : IMathVa
             when(operator){
                 MathOperator.BRACKET_OPEN -> {
                     // if the last component was not an operator like '+' it must be an implicit multiply like 2(2+2) = 2*(2+2) or invalid, which will get resolved later
-                    if(components.last !is MathOperator){
+                    if(!components.isEmpty() && components.last !is MathOperator){
                         components.add(MathOperator.MULTIPLY)
                     }
 
@@ -215,29 +254,31 @@ private fun parseExpression(expression : String, inBrackets : Boolean) : IMathVa
 
 
         //resolve powers into binary expression component
+        //check these right to left as that is the ordering for powers when written with ^ notation
         val componentsPower = LinkedList<ParsedMathEquation.IMathComponent>()
-        val iteratorPower = componentsNegative.iterator()
+        val iteratorPower = componentsNegative.reversed().iterator()
         while (iteratorPower.hasNext()) {
             val currentComponent = iteratorPower.next()
             if (currentComponent == MathOperator.POWER) {
                 if (!iteratorPower.hasNext() || componentsPower.size < 1) return IMathValue.getInvalid(
                     "power doesnt have component both sides: [$components]:[$componentsNegative]"
                 )
-                val next = iteratorPower.next()
-                val last = componentsPower.last
-                if (!(next is IMathValue && last is IMathValue)) return IMathValue.getInvalid("power isnt surrounded by values: [$components]:[$componentsNegative]")
-                componentsPower.removeLast()
-                componentsPower.add(
+                val left = iteratorPower.next()
+                val right = componentsPower.first
+                if (!(left is IMathValue && right is IMathValue)) return IMathValue.getInvalid("power isnt surrounded by values: [$components]:[$componentsNegative]")
+                componentsPower.removeFirst()
+                componentsPower.addFirst(
                     MathBinaryExpressionComponent(
-                        last,
+                        left,
                         currentComponent as MathOperator,
-                        next
+                        right
                     )
                 )
             } else {
-                componentsPower.add(currentComponent)
+                componentsPower.addFirst(currentComponent)
             }
         }
+
 
         //resolve * / into binary expression component
         val componentsMD = LinkedList<ParsedMathEquation.IMathComponent>()

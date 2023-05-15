@@ -48,7 +48,16 @@ enum class MathOperator : ParsedMathEquation.IMathComponent {
             else -> "!!"
         }
     }
-
+    fun toStringPretty(): String {
+        return when(this){
+            ADD-> "+"
+            SUBTRACT-> "-"
+            MULTIPLY-> "×"
+            DIVIDE-> "÷"
+            POWER-> "^"
+            else -> "!!"
+        }
+    }
 
 
     companion object {

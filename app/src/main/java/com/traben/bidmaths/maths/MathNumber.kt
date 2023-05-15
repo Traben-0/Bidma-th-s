@@ -1,5 +1,9 @@
 package com.traben.bidmaths.maths
 
+import android.content.Context
+import android.view.View
+import com.traben.bidmaths.maths.views.MathNumberView
+
 class MathNumber(var number : Float) : IMathValue {
 
 
@@ -8,10 +12,11 @@ class MathNumber(var number : Float) : IMathValue {
     }
 
     override fun getValue(): Float {
+        if(isResolved()) resolved
         return if (isNegative) -number else number
     }
 
-    var hasBrackets = false
+    public var hasBrackets = false
     override fun setBrackets() {
         hasBrackets = true
     }
@@ -29,6 +34,18 @@ class MathNumber(var number : Float) : IMathValue {
 
     override fun invert(){
         isNegative = ! isNegative
+    }
+
+    override var resolved: Float? = null
+
+    override fun resolve() {
+        TODO("Not yet implemented")
+    }
+
+    override fun getAsView(context: Context): View {
+        val view = MathNumberView(context)
+        view.setNumber(this)
+        return view
     }
 
 }

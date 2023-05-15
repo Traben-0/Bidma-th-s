@@ -1,5 +1,8 @@
 package com.traben.bidmaths.maths
 
+import android.content.Context
+import android.view.View
+import com.traben.bidmaths.maths.views.MathBinaryExpressionView
 import kotlin.math.absoluteValue
 import kotlin.random.Random
 
@@ -26,23 +29,37 @@ class MathBinaryExpressionComponent(
     override fun isValid(): Boolean {
         if (valueOne.isValid() && valueTwo.isValid()) {
             //check divide by 0
-            return !(operator == MathOperator.DIVIDE && valueTwo.getValue() == 0f)
+            return !(operator == MathOperator.DIVIDE && (valueTwo.getValue() == 0f || valueTwo.getValue() == -0f ))
         }
         return false
     }
 
-    var hasBrackets = false
+
+    var hasBrackets : Boolean = false
     override fun setBrackets() {
         hasBrackets = true
     }
 
     override fun getValue(): Float {
+        if(isResolved()) resolved
         val result = operator.performOperation(valueOne, valueTwo)
         return if (isNegative) -result else result
     }
 
+    override var resolved: Float? = null
+
+    override fun resolve() {
+        TODO("Not yet implemented")
+    }
+
     override fun toString(): String {
         return if (hasBrackets) "($valueOne$operator$valueTwo)" else "$valueOne$operator$valueTwo"
+    }
+
+    override fun getAsView(context: Context): View {
+        val view = MathBinaryExpressionView(context)
+        view.set(this)
+        return view
     }
 
     companion object {
@@ -64,21 +81,18 @@ class MathBinaryExpressionComponent(
         }
 
         private fun genRandomValue(difficulty: Int, maxDepth: Int): IMathValue {
-                //determines whether to end the nesting with a value or continue, the one that is more likely is determined by max depth
-                return if (Random.nextInt(3) == 1) {
+            //forcibly cut off the iteration at an upper limit
+                if(maxDepth < -1) return MathNumber(genNumberByDifficulty(difficulty))
+                if(maxDepth >0 ) return getRandom(difficulty, maxDepth-1)
+
+            //determines whether to end the nesting with a value or continue, the one that is more likely is determined by max depth
+                return if (Random.nextInt(6) == 1) {
                     //less likely
-                    if (maxDepth > 0) {
-                        MathNumber(genNumberByDifficulty(difficulty))
-                    }else{
-                        getRandom(difficulty, maxDepth-1)
-                    }
+                    getRandom(difficulty, maxDepth-1)
                 } else {
                     //more likely
-                    if (maxDepth > 0) {
-                        getRandom(difficulty, maxDepth-1)
-                    }else{
-                        MathNumber(genNumberByDifficulty(difficulty))
-                    }
+                    MathNumber(genNumberByDifficulty(difficulty))
+
                 }
 
         }
