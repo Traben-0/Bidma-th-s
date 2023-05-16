@@ -9,8 +9,8 @@ import java.util.*
 class ParsedMathEquation( val validExpression: IMathValue?){
 
 
-    fun getAnswer() : Float{
-        return validExpression?.getValue() ?: Float.NaN
+    fun getAnswer() : Double{
+        return validExpression?.getValue() ?: Double.NaN
     }
 
     fun isValid() : Boolean {
@@ -133,7 +133,7 @@ private fun parseExpression(expression : String, inBrackets : Boolean) : IMathVa
 
             //first catch any rolling read numbers
             if(rollingRead.isNotEmpty()){
-                val number : Float = rollingRead.toString().toFloatOrNull()
+                val number : Double = rollingRead.toString().toDoubleOrNull()
                     ?: //invalid
                     return IMathValue.getInvalid("${rollingRead.toString()}, is not a valid number")
                 components.add(MathNumber(number))
@@ -188,7 +188,7 @@ private fun parseExpression(expression : String, inBrackets : Boolean) : IMathVa
     }
     //catch any rolling read numbers left over for final component
     if(rollingRead.isNotEmpty()){
-        val number : Float = rollingRead.toString().toFloatOrNull()
+        val number : Double = rollingRead.toString().toDoubleOrNull()
             ?: //invalid
             return IMathValue.getInvalid("${rollingRead.toString()}, is not a valid number")
         components.add(MathNumber(number))

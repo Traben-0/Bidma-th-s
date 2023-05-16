@@ -14,7 +14,7 @@ enum class MathOperator : ParsedMathEquation.IMathComponent {
     POWER,
     NOT_VALID;
 
-    fun performOperation(valueOne : IMathValue, valueTwo: IMathValue) : Float{
+    fun performOperation(valueOne : IMathValue, valueTwo: IMathValue) : Double{
 
         return when(this){
                 ADD -> valueOne.getValue() + valueTwo.getValue()
@@ -33,7 +33,7 @@ enum class MathOperator : ParsedMathEquation.IMathComponent {
 
 
                 }
-                else -> Float.NaN
+                else -> Double.NaN
         }
 
     }

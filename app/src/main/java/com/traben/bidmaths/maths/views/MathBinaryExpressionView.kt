@@ -60,13 +60,16 @@ class MathBinaryExpressionView (
 
                 binding.operator.setOnClickListener {
                         if(expression.canResolve()) {
+
                                 val animation2 =
                                         AnimationUtils.loadAnimation(context, R.anim.resolve_math)
+
+                                val thisPointer = this
                                 animation2.setAnimationListener(object :
                                         Animation.AnimationListener {
                                         override fun onAnimationStart(animation: Animation?) {}
                                         override fun onAnimationEnd(animation: Animation?) {
-                                                expression.resolve(parent?.parent?.parent)
+                                                expression.resolve(thisPointer)
                                         }
                                         override fun onAnimationRepeat(animation: Animation?) {}
                                 })

@@ -3,15 +3,21 @@ package com.traben.bidmaths.maths
 import android.content.Context
 import android.view.View
 import android.view.ViewParent
+import android.widget.LinearLayout
+import androidx.annotation.ContentView
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.view.allViews
+import com.traben.bidmaths.R
+import com.traben.bidmaths.databinding.FragmentActivityBinding
 import com.traben.bidmaths.maths.views.MathBinaryExpressionView
 import kotlin.math.absoluteValue
 import kotlin.math.roundToInt
 import kotlin.random.Random
 
 class MathBinaryExpressionComponent(
-    var valueOne : IMathValue,
-    var operator : MathOperator,
-    var valueTwo : IMathValue
+    val valueOne : IMathValue,
+    val operator : MathOperator,
+    val valueTwo : IMathValue
     ) : IMathValue {
 
     override var isNegative = false
@@ -26,7 +32,7 @@ class MathBinaryExpressionComponent(
     override fun isValid(): Boolean {
         if (valueOne.isValid() && valueTwo.isValid()) {
             //check divide by 0
-            return !(operator == MathOperator.DIVIDE && (valueTwo.getValue() == 0f || valueTwo.getValue() == -0f ))
+            return !(operator == MathOperator.DIVIDE && (valueTwo.getValue() == 0.0 || valueTwo.getValue() == -0.0 ))
         }
         return false
     }
@@ -37,28 +43,37 @@ class MathBinaryExpressionComponent(
         hasBrackets = true
     }
 
-    override fun getValue(): Float {
+    override fun getValue(): Double {
         if(isResolved()) resolved
         val result = operator.performOperation(valueOne, valueTwo)
         return if (isNegative) -result else result
     }
 
-    var resolved: Float? = null
+    var resolved: Double? = null
 
     override fun isResolved(): Boolean {
         return resolved != null
     }
 
+
     fun canResolve() : Boolean{
         return valueOne.isResolved() && valueTwo.isResolved()
     }
-    fun resolve(parentView : ViewParent?) {
+
+    fun resolve(thisView : MathBinaryExpressionView) {
+
+        val parentView : ViewParent? = thisView.parent?.parent?.parent
         if(canResolve()) {
             resolved = getValue()
             if (parentView is MathBinaryExpressionView) {
                 parentView.update()
             } else {
-                println("done")
+                val holder = thisView.parent
+                if(holder is LinearLayout){
+                    holder.removeAllViews()
+                    holder.addView(MathNumber(resolved!!).getAsView(holder.context))
+                }
+                println("done $holder")
             }
         }else{
             println("nope")
@@ -83,8 +98,8 @@ class MathBinaryExpressionComponent(
         fun getRandom(difficulty: Int, maxDepth: Int): MathBinaryExpressionComponent {
 
             val op = MathOperator.getRandom(difficulty)
-            //simplify it to not get stupid big powers
-            val second = if(op== MathOperator.POWER){
+            //simplify it to not get stupidly big powers and divisions
+            val second = if(op== MathOperator.POWER || op == MathOperator.DIVIDE){
                 genRandomValueSimple()
             }else{
                 genRandomValue(difficulty, maxDepth)
@@ -137,12 +152,12 @@ class MathBinaryExpressionComponent(
 
         }
 
-        private fun genNumberByDifficulty(difficulty: Int): Float {
+        private fun genNumberByDifficulty(difficulty: Int): Double {
             if(difficulty==0){
-                return ((Random.nextFloat()*2-1) * 10).roundToInt().toFloat()
+                return ((Random.nextFloat()*2-1) * 10).roundToInt().toDouble()
             }
             //get a number arbitrarily large set by difficulty
-            var number : Float = ((Random.nextFloat()*2-1) * (difficulty*10)).toInt().toFloat()
+            var number : Double = ((Random.nextFloat()*2-1) * (difficulty*10)).toInt().toDouble()
 
             //set simple floating point values never more than 2 digits
             if(Random.nextBoolean() && Random.nextInt(11/difficulty.absoluteValue+1) < 1){

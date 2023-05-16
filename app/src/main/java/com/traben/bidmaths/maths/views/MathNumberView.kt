@@ -21,9 +21,9 @@ class MathNumberView(
                 val inflater = LayoutInflater.from(context)
                 binding = MathNumberBinding.inflate(inflater, this, true)
                 if(number.hasBrackets)
-                        binding.number.text =  "($number)"
+                        binding.number.text =  "(${number.toStringPretty()})"
                 else
-                        binding.number.text =  number.toString()
+                        binding.number.text =  number.toStringPretty()
         }
 
 

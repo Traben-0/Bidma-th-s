@@ -13,10 +13,11 @@ interface IMathValue : ParsedMathEquation.IMathComponent {
 
     fun setBrackets()
 
-    fun getValue() : Float
+    fun getValue() : Double
 
 
     fun isResolved ():Boolean {return false}
+
 
 
 
@@ -38,9 +39,10 @@ interface IMathValue : ParsedMathEquation.IMathComponent {
         override fun setBrackets() {
         }
 
-        override fun getValue(): Float {
-            return  Float.NaN
+        override fun getValue(): Double {
+            return  Double.NaN
         }
+
 
 
 
