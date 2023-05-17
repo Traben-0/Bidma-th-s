@@ -2,19 +2,19 @@ package com.traben.bidmaths.maths.views;
 
 import android.content.Context;
 import android.util.AttributeSet;
-import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
 import android.widget.LinearLayout
-import androidx.core.view.size
 import com.traben.bidmaths.R
 import com.traben.bidmaths.databinding.MathBinaryExpressionBinding
 import com.traben.bidmaths.maths.MathBinaryExpressionComponent
 import com.traben.bidmaths.maths.MathOperator
+import com.traben.bidmaths.maths.ParsedMathEquation
 
 class MathBinaryExpressionView (
+        private val fullExpression : ParsedMathEquation,
         private val expression: MathBinaryExpressionComponent,
         context: Context,
         attrs: AttributeSet? = null,
@@ -36,8 +36,8 @@ class MathBinaryExpressionView (
 
 
         fun update(){
-                setLeft(expression.valueOne.getAsView(context))
-                setRight(expression.valueTwo.getAsView(context))
+                setLeft(expression.valueOne.getAsView(fullExpression,context))
+                setRight(expression.valueTwo.getAsView(fullExpression,context))
         }
 
 
@@ -59,7 +59,7 @@ class MathBinaryExpressionView (
                 binding.operator.startAnimation(animation)
 
                 binding.operator.setOnClickListener {
-                        if(expression.canResolve()) {
+                        if(expression.canResolve() && fullExpression.isNextOperationThisConsideringLeftToRight(expression)) {
 
                                 val animation2 =
                                         AnimationUtils.loadAnimation(context, R.anim.resolve_math)

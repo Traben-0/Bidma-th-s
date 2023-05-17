@@ -6,7 +6,7 @@ import android.widget.TextView
 import java.util.*
 
 
-class ParsedMathEquation( val validExpression: IMathValue?){
+class ParsedMathEquation( val validExpression: MathBinaryExpressionComponent?){
 
 
     fun getAnswer() : Double{
@@ -15,6 +15,15 @@ class ParsedMathEquation( val validExpression: IMathValue?){
 
     fun isValid() : Boolean {
         return !getAnswer().isNaN()
+    }
+
+    //todo possible override
+    fun isNextOperationThisConsideringLeftToRight(operation : MathBinaryExpressionComponent): Boolean{
+        return operation == getNextOperation()
+    }
+
+    private fun getNextOperation(): MathBinaryExpressionComponent? {
+        return validExpression?.getNextOperation()
     }
 
     override fun toString(): String {
@@ -28,7 +37,7 @@ class ParsedMathEquation( val validExpression: IMathValue?){
     }
 
     fun getAsView(context: Context) : View {
-        return validExpression?.getAsView(context) ?: TextView(context)
+        return validExpression?.getAsView(this, context) ?: TextView(context)
     }
 
 
@@ -71,7 +80,7 @@ class ParsedMathEquation( val validExpression: IMathValue?){
             }
             try {//just in case
                 val parsedResult : IMathValue = parseExpression(expression, false)
-                if(parsedResult.isValid()){
+                if(parsedResult.isValid() && parsedResult is MathBinaryExpressionComponent){
                     return ParsedMathEquation(parsedResult)
                 }else {
                     println("FAILED: $parsedResult")

@@ -85,12 +85,32 @@ class MathBinaryExpressionComponent(
     }
 
 
-    override fun getAsView(context: Context): View {
+    override fun getAsView(expressionObject : ParsedMathEquation,context: Context): View {
         if (isResolved()) {
             return MathNumber(resolved!!).getAsView(context)
         }
 
-        return MathBinaryExpressionView(this,context)
+        return MathBinaryExpressionView(expressionObject,this,context)
+    }
+
+    fun getNextOperation() : MathBinaryExpressionComponent?{
+
+        if(!valueOne.isResolved() && valueOne is MathBinaryExpressionComponent ){
+            val oneOrNull = valueOne.getNextOperation()
+            if(oneOrNull != null)
+                return oneOrNull
+        }
+        if (!valueTwo.isResolved() && valueTwo is MathBinaryExpressionComponent ){
+            val twoOrNull = valueTwo.getNextOperation()
+            if(twoOrNull != null)
+                return twoOrNull
+        }
+        if (canResolve())
+            return this
+        return null
+
+
+
     }
 
     companion object {

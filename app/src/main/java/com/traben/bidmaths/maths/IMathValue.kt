@@ -21,7 +21,7 @@ interface IMathValue : ParsedMathEquation.IMathComponent {
 
 
 
-    fun getAsView(context: Context) : View
+    fun getAsView(expressionObject : ParsedMathEquation, context: Context) : View
     companion object{
 
         fun getInvalid(why: String) : InvalidValue {
@@ -46,7 +46,7 @@ interface IMathValue : ParsedMathEquation.IMathComponent {
 
 
 
-        override fun getAsView(context: Context): View {
+        override fun getAsView(expressionObject : ParsedMathEquation,context: Context): View {
             return TextView(context)
         }
 

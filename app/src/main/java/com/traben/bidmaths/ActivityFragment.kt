@@ -33,7 +33,7 @@ class ActivityFragment : Fragment() {
         binding.content.removeAllViews()
         binding.content.addView(context?.let { equation.getAsView(it) })
 
-        binding.buttonSecond.text = equation.toStringPretty()
+        binding.buttonFirst.text = equation.toStringPretty()
 
         return binding.root
 
@@ -44,7 +44,7 @@ class ActivityFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.buttonSecond.setOnClickListener {
+        binding.buttonFirst.setOnClickListener {
             findNavController().navigate(R.id.action_SecondFragment_to_FirstFragment)
         }
     }
