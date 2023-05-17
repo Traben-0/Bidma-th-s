@@ -6,19 +6,28 @@ import android.widget.TextView
 import java.util.*
 
 
-class ParsedMathEquation( val validExpression: MathBinaryExpressionComponent?){
+class ParsedMathEquation( val validExpression: MathBinaryExpressionComponent?, val respectLeftRight : Boolean) : java.io.Serializable{
 
+
+    var timesAnsweredWrong : Int = 0
 
     fun getAnswer() : Double{
         return validExpression?.getValue() ?: Double.NaN
     }
 
+    fun isCompleted():Boolean{
+        return validExpression?.isResolved()?:false
+    }
+
+    var completeAction : () -> Unit = {}
+
     fun isValid() : Boolean {
         return !getAnswer().isNaN()
     }
 
-    //todo possible override
+
     fun isNextOperationThisConsideringLeftToRight(operation : MathBinaryExpressionComponent): Boolean{
+        if (!respectLeftRight) return true
         return operation == getNextOperation()
     }
 
@@ -43,17 +52,17 @@ class ParsedMathEquation( val validExpression: MathBinaryExpressionComponent?){
 
     companion object{
 
-        fun createRandomExpression( difficulty : Int) : ParsedMathEquation{
+        fun createRandomExpression( difficulty : Int, respectLeftRight: Boolean) : ParsedMathEquation{
             val diff = difficulty.coerceAtLeast(1).coerceAtMost(20)
-            val depth = 1//todo this is the primary controller of equation length  1 = perfect balance but could go one higher
-            return  createRandomExpression(diff,depth,1)
+            val depth = 1 + difficulty/5
+            return  createRandomExpression(diff,depth,1, respectLeftRight)
         }
-        private fun createRandomExpression( difficulty : Int,depth : Int, iterations : Int) : ParsedMathEquation{
+        private fun createRandomExpression( difficulty : Int,depth : Int, iterations : Int, respectLeftRight: Boolean) : ParsedMathEquation{
             //max 10 attempts at generating a valid random expression
             if(iterations > 10){
                 // i'm not perfect lets pick from some known good examples as this is hopefully a rare case
                 println("Failed to create random expression 10 times, defaulting to known expressions")
-                return parseExpressionAndPrepare(listOfGoodBackupExpressions.random())
+                return parseExpressionAndPrepare(listOfGoodBackupExpressions.random(), respectLeftRight)
             }
 
             //create a random structured expression
@@ -63,25 +72,25 @@ class ParsedMathEquation( val validExpression: MathBinaryExpressionComponent?){
             generatedButNotValid.hasBrackets=false
             val stringExpression = generatedButNotValid.toString()
 
-            val possiblyValidExpression = parseExpressionAndPrepare(stringExpression)
+            val possiblyValidExpression = parseExpressionAndPrepare(stringExpression, respectLeftRight)
             return if(possiblyValidExpression.isValid()){
                 possiblyValidExpression
             }else{
                 //loop if was invalid
                 println("Failed #$iterations: $stringExpression")
                 //failures are expected as we construct them lazily and could easily have a divide by 0 result in the equation
-                createRandomExpression(difficulty,depth,iterations+1)
+                createRandomExpression(difficulty,depth,iterations+1, respectLeftRight)
             }
         }
 
-        fun parseExpressionAndPrepare(expression : String) : ParsedMathEquation{
+        fun parseExpressionAndPrepare(expression : String, respectLeftRight: Boolean) : ParsedMathEquation{
             if(expression.isBlank()){
-                return ParsedMathEquation(null)
+                return ParsedMathEquation(null,false)
             }
             try {//just in case
                 val parsedResult : IMathValue = parseExpression(expression, false)
                 if(parsedResult.isValid() && parsedResult is MathBinaryExpressionComponent){
-                    return ParsedMathEquation(parsedResult)
+                    return ParsedMathEquation(parsedResult,respectLeftRight)
                 }else {
                     println("FAILED: $parsedResult")
                 }
@@ -89,7 +98,7 @@ class ParsedMathEquation( val validExpression: MathBinaryExpressionComponent?){
                 e.printStackTrace()
                 println("FAILED: ${e.cause}")
             }
-            return ParsedMathEquation(null)
+            return ParsedMathEquation(null,false)
         }
 
 

@@ -1,13 +1,18 @@
 package com.traben.bidmaths
 
+import android.content.Context
+import android.content.SharedPreferences
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.addCallback
+import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import com.traben.bidmaths.databinding.FragmentActivityBinding
 import com.traben.bidmaths.maths.ParsedMathEquation
+
 
 /**
  * A simple [Fragment] subclass as the second destination in the navigation.
@@ -20,6 +25,9 @@ class ActivityFragment : Fragment() {
     // onDestroyView.
     private val binding get() = _binding!!
 
+
+    val args: ActivityFragmentArgs by navArgs()
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -28,13 +36,33 @@ class ActivityFragment : Fragment() {
         _binding = FragmentActivityBinding.inflate(inflater, container, false)
 
 
+        if(MathGame.currentMathGame != null ) {
+            if (MathGame.currentMathGame!!.isGameFinished(args.gameIteration)) {
+                //game over
+                binding.buttonFirst.text = MathGame.currentMathGame!!.gameResults()
+                binding.buttonFirst.isEnabled = true
+                binding.buttonFirst.setOnClickListener {
+                    findNavController().navigate(R.id.action_SecondFragment_to_FirstFragment)
+                }
+            }else{
+                //game is still in progress
+                equation = MathGame.currentMathGame!!.getEquation(args.gameIteration)
 
-        equation = ParsedMathEquation.createRandomExpression(3)
-        binding.content.removeAllViews()
-        binding.content.addView(context?.let { equation.getAsView(it) })
+                equation.completeAction = {
+                    binding.buttonFirst.isEnabled = true
+                    binding.buttonFirst.text = if(MathGame.currentMathGame!!.isLastGame(args.gameIteration)) "Finish" else "Next"
+                }
 
-        binding.buttonFirst.text = equation.toStringPretty()
+                binding.content.removeAllViews()
+                binding.content.addView(context?.let { equation.getAsView(it) })
 
+                binding.buttonFirst.isEnabled = false
+                binding.buttonFirst.text = "Game ${args.gameIteration+1} / ${MathGame.currentMathGame!!.equations.size}"
+            }
+        }else{
+            //error
+            findNavController().navigate(R.id.action_SecondFragment_to_FirstFragment)
+        }
         return binding.root
 
     }
@@ -45,7 +73,12 @@ class ActivityFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         binding.buttonFirst.setOnClickListener {
-            findNavController().navigate(R.id.action_SecondFragment_to_FirstFragment)
+            val action =  ActivityFragmentDirections.actionSecondFragmentSelf(
+                gameIteration = args.gameIteration+1)
+
+            findNavController().navigate(action)
+            //findNavController().navigate(R.id.action_SecondFragment_self,
+
         }
     }
 

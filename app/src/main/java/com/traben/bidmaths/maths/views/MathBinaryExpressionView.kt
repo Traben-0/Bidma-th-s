@@ -70,11 +70,15 @@ class MathBinaryExpressionView (
                                         override fun onAnimationStart(animation: Animation?) {}
                                         override fun onAnimationEnd(animation: Animation?) {
                                                 expression.resolve(thisPointer)
+                                                if(fullExpression.isCompleted()){
+                                                        fullExpression.completeAction.invoke()
+                                                }
                                         }
                                         override fun onAnimationRepeat(animation: Animation?) {}
                                 })
                                 binding.container.startAnimation(animation2)
                         }else{
+                                fullExpression.timesAnsweredWrong++
                                 val animation2 =
                                         AnimationUtils.loadAnimation(context, R.anim.shake)
                                 binding.container.startAnimation(animation2)

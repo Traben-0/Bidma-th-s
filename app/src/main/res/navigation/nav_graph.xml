@@ -12,19 +12,36 @@
         tools:layout="@layout/fragment_landing">
 
         <action
-            android:id="@+id/action_FirstFragment_to_SecondFragment"
+            android:id="@+id/action_StartGame"
             app:destination="@id/SecondFragment"
             app:enterAnim="@anim/enter"
-            app:exitAnim="@android:anim/fade_out" />
+            app:exitAnim="@android:anim/fade_out" >
+
+        </action>
     </fragment>
     <fragment
+
         android:id="@+id/SecondFragment"
         android:name="com.traben.bidmaths.ActivityFragment"
         android:label="@string/second_fragment_label"
         tools:layout="@layout/fragment_activity">
+        <argument
+            android:name="gameIteration"
+            app:argType="integer"
+            app:nullable="false"
+            android:defaultValue="0" />
 
         <action
             android:id="@+id/action_SecondFragment_to_FirstFragment"
-            app:destination="@id/FirstFragment" />
+            app:destination="@id/FirstFragment">
+
+        </action>
+        <action
+            android:id="@+id/action_SecondFragment_self"
+            app:destination="@id/SecondFragment"
+            app:popUpTo="@+id/FirstFragment">
+
+        </action>
+
     </fragment>
 </navigation>

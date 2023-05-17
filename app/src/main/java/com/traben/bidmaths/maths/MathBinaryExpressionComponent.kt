@@ -18,7 +18,7 @@ class MathBinaryExpressionComponent(
     val valueOne : IMathValue,
     val operator : MathOperator,
     val valueTwo : IMathValue
-    ) : IMathValue {
+    ) : IMathValue, java.io.Serializable {
 
     override var isNegative = false
 
@@ -74,6 +74,7 @@ class MathBinaryExpressionComponent(
                     holder.addView(MathNumber(resolved!!).getAsView(holder.context))
                 }
                 println("done $holder")
+
             }
         }else{
             println("nope")
