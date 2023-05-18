@@ -4,7 +4,7 @@ import android.content.Context
 import android.view.View
 import com.traben.bidmaths.maths.views.MathNumberView
 
-class MathNumber(var number : Double) : IMathValue, java.io.Serializable {
+class MathNumber(var number : Double) : IMathValue {
 
 
     override fun isValid(): Boolean {

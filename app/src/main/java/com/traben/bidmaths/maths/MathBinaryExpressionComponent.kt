@@ -18,7 +18,7 @@ class MathBinaryExpressionComponent(
     val valueOne : IMathValue,
     val operator : MathOperator,
     val valueTwo : IMathValue
-    ) : IMathValue, java.io.Serializable {
+    ) : IMathValue {
 
     override var isNegative = false
 

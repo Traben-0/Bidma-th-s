@@ -1,7 +1,7 @@
 package com.traben.bidmaths
 
+import android.content.Context
 import android.os.Bundle
-import com.google.android.material.snackbar.Snackbar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
@@ -9,11 +9,12 @@ import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import android.view.Menu
 import android.view.MenuItem
+import androidx.navigation.NavController
+import androidx.navigation.NavDestination
 import com.traben.bidmaths.databinding.ActivityMainBinding
 
 
-val PREFERENCES = "bidmaths_settings"
-val LEFT_TO_RIGHT_KEY = "respect_left_to_right"
+
 class MainActivity : AppCompatActivity() {
 
     private lateinit var appBarConfiguration: AppBarConfiguration
@@ -25,6 +26,8 @@ class MainActivity : AppCompatActivity() {
 
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        SettingsFragment.initSettings(getSharedPreferences(PREFERENCES, Context.MODE_PRIVATE))
 
         setSupportActionBar(binding.toolbar)
 
@@ -50,7 +53,10 @@ class MainActivity : AppCompatActivity() {
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         return when (item.itemId) {
-            R.id.action_settings -> true
+            R.id.action_settings -> {
+                findNavController(R.id.nav_host_fragment_content_main).navigate(R.id.settingsFragment)
+                true
+            }
             else -> super.onOptionsItemSelected(item)
         }
     }

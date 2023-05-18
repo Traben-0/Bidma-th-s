@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.Menu
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.addCallback
@@ -63,8 +64,15 @@ class ActivityFragment : Fragment() {
             //error
             findNavController().navigate(R.id.action_SecondFragment_to_FirstFragment)
         }
+        setHasOptionsMenu(true)
         return binding.root
 
+    }
+
+    @Deprecated("Deprecated in Java")
+    override fun onPrepareOptionsMenu(menu: Menu) {
+        super.onPrepareOptionsMenu(menu)
+        menu.clear()
     }
 
     lateinit var equation : ParsedMathEquation

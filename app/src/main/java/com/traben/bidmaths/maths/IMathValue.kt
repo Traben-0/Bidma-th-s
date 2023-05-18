@@ -4,7 +4,7 @@ import android.content.Context
 import android.view.View
 import android.widget.TextView
 
-interface IMathValue : ParsedMathEquation.IMathComponent, java.io.Serializable {
+interface IMathValue : ParsedMathEquation.IMathComponent {
 
     var isNegative: Boolean
     fun invert()

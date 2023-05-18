@@ -1,0 +1,38 @@
+<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <!-- Switches Category -->
+    <PreferenceCategory
+        app:title="Settings">
+
+        <SwitchPreferenceCompat
+            app:key="respect_left_to_right"
+            app:title="Force 'left to right' solving"
+            app:summary="This is switch 1 preference" />
+
+        <SwitchPreferenceCompat
+            app:key="enable_hints"
+            app:title="Enable hints"
+            app:summary="This is switch 2 preference" />
+
+        <SwitchPreferenceCompat
+            app:key="hide_results"
+            app:title="Hide game results"
+            app:summary="This is switch 3 preference" />
+
+    </PreferenceCategory>
+
+    <!-- Button Category -->
+    <PreferenceCategory
+        app:title="Data">
+        <Preference
+            app:key="reset_leaderboard"
+            app:title="Reset leaderboard"
+            app:summary="Tap to clear the leaderboard of all entries" >
+
+
+        </Preference>
+
+    </PreferenceCategory>
+
+
+</PreferenceScreen>

@@ -8,7 +8,7 @@
     <fragment
         android:id="@+id/FirstFragment"
         android:name="com.traben.bidmaths.LandingFragment"
-        android:label="@string/first_fragment_label"
+        android:label="Bid Ma(th)s"
         tools:layout="@layout/fragment_landing">
 
         <action
@@ -18,12 +18,15 @@
             app:exitAnim="@android:anim/fade_out" >
 
         </action>
+        <action
+            android:id="@+id/action_FirstFragment_to_settingsFragment"
+            app:destination="@id/settingsFragment" />
     </fragment>
     <fragment
 
         android:id="@+id/SecondFragment"
         android:name="com.traben.bidmaths.ActivityFragment"
-        android:label="@string/second_fragment_label"
+        android:label="Solve the equation!"
         tools:layout="@layout/fragment_activity">
         <argument
             android:name="gameIteration"
@@ -42,6 +45,24 @@
             app:popUpTo="@+id/FirstFragment">
 
         </action>
+        <action
+            android:id="@+id/action_SecondFragment_to_finishedFragment"
+            app:destination="@id/finishedFragment" />
 
+    </fragment>
+    <fragment
+        android:id="@+id/settingsFragment"
+        android:name="com.traben.bidmaths.SettingsFragment"
+        android:label="SettingsFragment" />
+    <fragment
+        android:id="@+id/finishedFragment"
+        android:name="com.traben.bidmaths.FinishedFragment"
+        android:label="FinishedFragment" >
+        <action
+            android:id="@+id/action_finishedFragment_to_FirstFragment"
+            app:destination="@id/FirstFragment" />
+        <action
+            android:id="@+id/action_finishedFragment_to_SecondFragment"
+            app:destination="@id/SecondFragment" />
     </fragment>
 </navigation>
