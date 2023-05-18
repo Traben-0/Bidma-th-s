@@ -7,11 +7,18 @@ import android.view.View
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
 import android.widget.LinearLayout
+import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
+import com.traben.bidmaths.LandingFragmentDirections
+import com.traben.bidmaths.MathGame
 import com.traben.bidmaths.R
 import com.traben.bidmaths.databinding.MathBinaryExpressionBinding
 import com.traben.bidmaths.maths.MathBinaryExpressionComponent
 import com.traben.bidmaths.maths.MathOperator
 import com.traben.bidmaths.maths.ParsedMathEquation
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class MathBinaryExpressionView (
         private val fullExpression : ParsedMathEquation,
@@ -99,5 +106,4 @@ class MathBinaryExpressionView (
                 if(expression.hasBrackets)
                         binding.right.addView(MathBracketView(false,context))
         }
-
 }

@@ -1,6 +1,8 @@
 package com.traben.bidmaths
 
+import androidx.navigation.fragment.findNavController
 import com.traben.bidmaths.maths.ParsedMathEquation
+import kotlinx.coroutines.Dispatchers
 
 class MathGame(val equations : List<ParsedMathEquation>) {
 
@@ -22,31 +24,77 @@ class MathGame(val equations : List<ParsedMathEquation>) {
         for (equation in equations)
             count += equation.timesAnsweredWrong
 
-        return "failed $count times in ${equations.size} equations"
+        return "Wrong $count times in ${equations.size} rounds"
+    }
+    fun gameScore() : Int{
+        var count = 0
+        for (equation in equations)
+            count += equation.timesAnsweredWrong
+        return (100 - count / (equations.size * 3) *100).coerceAtLeast(0)
     }
 
-    fun gameResultsStorageMap() :Map<String,Int>{
-        val map = LinkedHashMap<String,Int>()
-        for (equation in equations)
-            map[equation.toStringPretty()] = equation.timesAnsweredWrong
-        return map
+    fun gameResultsDetailedInfo() :String{
+        val allEquations = LinkedHashMap<String,Int>()
+        var best = Int.MAX_VALUE;
+        var bestEquation = ""
+
+        var worst = Int.MIN_VALUE;
+        var worstEquation = ""
+
+        for (equation in equations) {
+            val wrongAnswers = equation.timesAnsweredWrong
+            val equationString = equation.toStringPretty()
+            if(wrongAnswers < best){
+                best = wrongAnswers
+                bestEquation = equationString
+            }else if (wrongAnswers > worst){
+                worst = wrongAnswers
+                worstEquation = equationString
+            }
+            allEquations[equationString] = wrongAnswers
+
+
+        }
+        val output = java.lang.StringBuilder( """
+                Best round:
+                 - equation:    $bestEquation
+                 - timesWrong:  $best
+                
+                Worst round:
+                 - equation:    $worstEquation
+                 - timesWrong:  $worst
+                 
+                All rounds:
+            """.trimIndent())
+        var i = 0
+        for(entry in allEquations){
+            i++
+            output.append("""
+                
+                Round #$i:
+                 - equation:    ${entry.key}
+                 - timesWrong:  ${entry.value}
+                 
+            """.trimIndent())
+        }
+        return output.toString()
     }
 
 
     companion object{
-        fun loadEasyGame(){
+        private fun loadEasyGame(){
             lastMode = GameMode.EASY
             val equationsForGame = mutableListOf<ParsedMathEquation>()
-            for(i in 0..3) {
+            for(i in 0..1) {
                 equationsForGame.add(ParsedMathEquation.createRandomExpression(i/3))
             }
             currentMathGame = MathGame(equationsForGame)
         }
 
-        fun loadMediumGame(){
+        private fun loadMediumGame(){
             lastMode = GameMode.MEDIUM
             val equationsForGame = mutableListOf<ParsedMathEquation>()
-            for(i in 0..10) {
+            for(i in 0..9) {
                 equationsForGame.add(ParsedMathEquation.createRandomExpression(i/2))
             }
             currentMathGame = MathGame(equationsForGame)
@@ -55,10 +103,18 @@ class MathGame(val equations : List<ParsedMathEquation>) {
         fun loadHardGame(){
             lastMode = GameMode.HARD
             val equationsForGame = mutableListOf<ParsedMathEquation>()
-            for(i in 0..15) {
+            for(i in 0..14) {
                 equationsForGame.add(ParsedMathEquation.createRandomExpression(i))
             }
             currentMathGame = MathGame(equationsForGame)
+        }
+
+        suspend fun  loadGameMode(mode: GameMode){
+            when (mode){
+                GameMode.EASY -> loadEasyGame()
+                GameMode.MEDIUM -> loadMediumGame()
+                GameMode.HARD -> loadHardGame()
+            }
         }
 
         private var lastMode = GameMode.EASY
@@ -68,7 +124,6 @@ class MathGame(val equations : List<ParsedMathEquation>) {
                 GameMode.EASY -> loadEasyGame()
                 GameMode.MEDIUM -> loadMediumGame()
                 GameMode.HARD -> loadHardGame()
-                GameMode.CUSTOM -> TODO()
             }
         }
 
@@ -77,11 +132,10 @@ class MathGame(val equations : List<ParsedMathEquation>) {
 
 
 
-    private enum class GameMode{
+    enum class GameMode{
         EASY,
         MEDIUM,
-        HARD,
-        CUSTOM
+        HARD
     }
 
 }

@@ -2,14 +2,13 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@color/ic_launcher_background">
 
     <ImageView
         android:id="@+id/medal_icon_shadow"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:scaleX="10"
-        android:scaleY="10"
         android:translationX="10dp"
         android:translationY="7dp"
         app:tint="#000"
@@ -20,32 +19,67 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toTopOf="@id/result"
         android:layout_marginTop="100dp"
-        android:layout_marginBottom="100dp" />
+        android:layout_marginBottom="35dp" />
 
     <ImageView
         android:id="@+id/medal_icon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:scaleX="10"
-        android:scaleY="10"
         android:src="@drawable/baseline_thumb_up_24"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toTopOf="@id/result"
         android:layout_marginTop="100dp"
-        android:layout_marginBottom="100dp" />
+        android:tint="#ffd5af"
+        android:layout_marginBottom="10dp" />
 
     <TextView
         android:id="@+id/result"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="TextView"
-        android:textSize="36dp"
-        app:layout_constraintBottom_toTopOf="@+id/buttons"
+        android:text="Score: 69"
+        android:fontFamily="casual"
+        android:textAllCaps="true"
+        android:textColor="#ffd5af"
+        android:textSize="48dp"
+        android:textStyle="bold"
+        android:typeface="sans"
+        android:layout_marginBottom="30dp"
+        app:layout_constraintBottom_toTopOf="@+id/submit_to_board"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/medal_icon" />
+
+    <LinearLayout
+        android:id="@+id/submit_to_board"
+        android:layout_width="match_parent"
+        android:paddingStart="70dp"
+        android:paddingEnd="70dp"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/result"
+        app:layout_constraintBottom_toTopOf="@id/buttons">
+
+        <EditText
+            android:id="@+id/submitText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textColor="#FFF"
+            android:textColorHint="#fff"
+            android:hint="Name for scoreboard"
+            android:inputType="text"/>
+
+        <Button
+            android:id="@+id/submitButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Submit"/>
+
+    </LinearLayout>
 
     <LinearLayout
         android:id="@+id/buttons"
@@ -57,7 +91,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/play_again_button">
+        app:layout_constraintTop_toBottomOf="@id/submit_to_board">
 
         <Button
             android:id="@+id/play_again_button"

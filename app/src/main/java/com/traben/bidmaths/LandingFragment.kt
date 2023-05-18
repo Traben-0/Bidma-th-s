@@ -5,8 +5,12 @@ import android.view.*
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.traben.bidmaths.databinding.FragmentLandingBinding
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 /**
  * A simple [Fragment] subclass as the default destination in the navigation.
@@ -28,19 +32,13 @@ class LandingFragment : Fragment() {
 
 
         binding.easyButton.setOnClickListener {
-            MathGame.loadEasyGame()
-            val action =  LandingFragmentDirections.actionStartGame(gameIteration = 0)
-            findNavController().navigate(action)
+            launchGameMode(MathGame.GameMode.EASY)
         }
         binding.mediumButton.setOnClickListener {
-            MathGame.loadMediumGame()
-            val action =  LandingFragmentDirections.actionStartGame(gameIteration = 0)
-            findNavController().navigate(action)
+            launchGameMode(MathGame.GameMode.MEDIUM)
         }
         binding.hardButton.setOnClickListener {
-            MathGame.loadHardGame()
-            val action =  LandingFragmentDirections.actionStartGame(gameIteration = 0)
-            findNavController().navigate(action)
+            launchGameMode(MathGame.GameMode.HARD)
         }
         animation = AnimationUtils.loadAnimation(context, R.anim.pulse_wobble)
         val randomDuration = (500..1500).random() // Random duration between 500 and 1500 milliseconds
@@ -49,6 +47,19 @@ class LandingFragment : Fragment() {
 
         return binding.root
 
+    }
+
+
+
+    private fun launchGameMode(mode : MathGame.GameMode){
+        lifecycleScope.launch(Dispatchers.IO) {
+            MathGame.loadGameMode(mode)
+            withContext(Dispatchers.Main) {
+                val action = LandingFragmentDirections.actionStartGame(gameIteration = 0)
+                findNavController().navigate(action)
+            }
+
+        }
     }
 
 

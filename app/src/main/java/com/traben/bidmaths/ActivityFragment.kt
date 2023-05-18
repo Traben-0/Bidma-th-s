@@ -40,6 +40,7 @@ class ActivityFragment : Fragment() {
         if(MathGame.currentMathGame != null ) {
             if (MathGame.currentMathGame!!.isGameFinished(args.gameIteration)) {
                 //game over
+
                 binding.buttonFirst.text = MathGame.currentMathGame!!.gameResults()
                 binding.buttonFirst.isEnabled = true
                 binding.buttonFirst.setOnClickListener {
@@ -49,9 +50,16 @@ class ActivityFragment : Fragment() {
                 //game is still in progress
                 equation = MathGame.currentMathGame!!.getEquation(args.gameIteration)
 
+
                 equation.completeAction = {
+                    //this lambda is run when the equation is completed
                     binding.buttonFirst.isEnabled = true
                     binding.buttonFirst.text = if(MathGame.currentMathGame!!.isLastGame(args.gameIteration)) "Finish" else "Next"
+                    if(MathGame.currentMathGame!!.isLastGame(args.gameIteration)){
+                        binding.buttonFirst.setOnClickListener {
+                            findNavController().navigate(R.id.action_SecondFragment_to_finishedFragment)
+                        }
+                    }
                 }
 
                 binding.content.removeAllViews()
@@ -68,6 +76,8 @@ class ActivityFragment : Fragment() {
         return binding.root
 
     }
+
+
 
     @Deprecated("Deprecated in Java")
     override fun onPrepareOptionsMenu(menu: Menu) {

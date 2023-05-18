@@ -47,7 +47,8 @@
         </action>
         <action
             android:id="@+id/action_SecondFragment_to_finishedFragment"
-            app:destination="@id/finishedFragment" />
+            app:destination="@id/finishedFragment"
+            app:popUpTo="@+id/FirstFragment"/>
 
     </fragment>
     <fragment
@@ -63,6 +64,7 @@
             app:destination="@id/FirstFragment" />
         <action
             android:id="@+id/action_finishedFragment_to_SecondFragment"
-            app:destination="@id/SecondFragment" />
+            app:destination="@id/SecondFragment"
+            app:popUpTo="@+id/FirstFragment"/>
     </fragment>
 </navigation>
