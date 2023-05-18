@@ -48,7 +48,7 @@ class FinishedFragment : Fragment() {
             lifecycleScope.launch(Dispatchers.IO) {
                 MathGame.loadNewGameInLastMode()
                 withContext(Dispatchers.Main) {
-                    val action = LandingFragmentDirections.actionStartGame(gameIteration = 0)
+                    val action = FinishedFragmentDirections.actionFinishedFragmentToSecondFragment(gameIteration = 0)
                     findNavController().navigate(action)
                 }
 
