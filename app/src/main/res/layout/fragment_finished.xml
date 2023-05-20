@@ -11,14 +11,53 @@
         android:id="@+id/top_holder"
         android:layout_width="350dp"
         android:layout_height="350dp"
-        android:paddingTop="60dp"
+        android:background="@drawable/share_background"
         android:layout_gravity="center"
         app:layout_constraintBottom_toTopOf="@id/bottom_holder"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/logo_hidden"
+            android:layout_width="150dp"
+            android:layout_height="150dp"
+            android:translationY="-10dp"
+            android:visibility="invisible"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <ImageView
+                android:id="@+id/imageViewShadow"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="10dp"
+                android:alpha="0.5"
+                android:src="@drawable/logo"
+                app:tint="#000000"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+
+            <ImageView
+                android:id="@+id/imageView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:src="@drawable/logo"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
         <ImageView
+            android:layout_marginTop="60dp"
             android:id="@+id/medal_icon_shadow"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -33,6 +72,7 @@
             app:tint="#000" />
 
         <ImageView
+            android:layout_marginTop="60dp"
             android:id="@+id/medal_icon"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -111,7 +151,7 @@
                 style="@style/yellowy_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Submit" />
+                android:text="Save" />
 
         </LinearLayout>
 
@@ -149,6 +189,14 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:text="View Leaderboard" />
+
+            <Button
+                android:id="@+id/share_button"
+                style="@style/yellowy_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="Share score ➦" />
 
         </LinearLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>

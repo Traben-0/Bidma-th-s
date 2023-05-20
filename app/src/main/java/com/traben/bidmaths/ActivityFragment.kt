@@ -39,7 +39,9 @@ class ActivityFragment : Fragment() {
         if (MathGame.currentMathGame != null) {
 
             //easier than data binding :/
-            MathGame.currentMathGame?.hintDisplay = binding.hintText
+            MathGame.currentMathGame?.hintSetter = {
+                binding?.hintText?.text = it
+            }
 
             // give hint option functionality
             if (!SettingsFragment.hintsEnabled){

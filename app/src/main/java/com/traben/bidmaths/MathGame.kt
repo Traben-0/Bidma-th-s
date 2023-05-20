@@ -9,14 +9,20 @@ import kotlin.random.Random
 
 class MathGame(val equations: List<ParsedMathEquation>) {
 
-    var currentHint = GameHint.GENERAL
+    // used to prevent repeated hints, feels unresponsive to end user
+    private var currentHint = GameHint.GENERAL
 
-    public var hintDisplay: TextView? = null
+    //was easier then data binding, sue me
+    var hintSetter : (String)->Unit = {}
 
+    //updates the current game hint given certain context
     fun updateHint(operatorClicked: MathOperator) {
-        currentHint = GameHint.getFromEquation(lastEquation?.getNextOperation(), operatorClicked)
-        hintDisplay?.text = currentHint.message
-        println("hint")
+        currentHint = GameHint.getFromEquationDifferentTo(
+            lastEquation?.getNextOperation(),
+            operatorClicked,
+            currentHint
+        )
+        hintSetter.invoke(currentHint.getMessage())
     }
 
     var lastEquation: ParsedMathEquation? = null
@@ -25,21 +31,11 @@ class MathGame(val equations: List<ParsedMathEquation>) {
         return equations[index]
     }
 
-    fun isGameFinished(iteration: Int): Boolean {
-        return equations.size <= iteration
-    }
 
     fun isLastGame(iteration: Int): Boolean {
         return equations.size - 1 == iteration
     }
 
-    fun gameResults(): String {
-        var count = 0
-        for (equation in equations)
-            count += equation.timesAnsweredWrong
-
-        return "Wrong $count times in ${equations.size} rounds"
-    }
 
     fun gameScore(): Int {
         val averageIncorrectPerEquation = averageScore()
@@ -123,11 +119,11 @@ class MathGame(val equations: List<ParsedMathEquation>) {
         private val gradesOrdered = listOf(
             "F-", "F", "F+",
             "E-", "E", "E+",
-            "D-", "D", "D+",
-            "C-", "C", "C+",
+            "D-", "D", "D",
+            "D+", "C-", "C",
+            "C", "C+", "C+",
             "B-", "B", "B+",
-            "A-", "A", "A+",
-            "S", "S+", "S++"
+            "A-", "A", "A+"
         )
 
         public fun scoreToGrade(score: Int): String {
@@ -180,36 +176,69 @@ class MathGame(val equations: List<ParsedMathEquation>) {
             }
         }
 
+        // the current game as a resettable singleton format
         var currentMathGame: MathGame? = null
     }
 
-
+    // a simple utility enum
     enum class GameMode {
         EASY,
         MEDIUM,
         HARD
     }
 
-    enum class GameHint(val message: String) {
-        BRACKET_HINT("brackets?"),
-        NEXT_IS_POWER("NEXT_IS_POWER"),
-        NEXT_IS_MULTIPLY("NEXT_IS_MULTIPLY"),
-        NOT_PLUS("NOT_PLUS"),
-        NOT_MULTIPLY("NOT_MULTIPLY"),
-        NOT_POWER("NOT_POWER"),
-        GENERAL("GENERAL");
+    // an enum containing various possible hints
+    // the variations allow for a context driven hint system
+    enum class GameHint(private val message: String) {
+        BRACKET_HINT("Are there any brackets that need to be completed first?"),
+        LEFT_TO_RIGHT_HINT("Are you solving from the left to the right?"),
+        NEXT_IS_POWER("Indices (^) go before Division, Multiplication, Addition, & Subtraction."),
+        NEXT_IS_MULTIPLY("Multiplication and Division must always be done before adding and subtracting values."),
+        NOT_PLUS("Remember you cannot add or subtract numbers if they need to be Multiplied or Divided first, you must also resolve any (Brackets) & ^Indeces."),
+        NOT_MULTIPLY("Remember (Brackets) & ^Indeces go before Multiplication & Division"),
+        NOT_POWER("Something is preventing this Index (^) from resolving, perhaps the index value itself isn't resolved, or there are brackets needing resolution first."),
+        GENERAL("Remember the order of operations: Brackets -> Orders -> Division & Multiplication -> Addition & Subtraction");
 
+        fun getMessage() : String{
+            return "Hint: ${this.message}"
+        }
         companion object {
-            fun getFromEquation(
+
+            // this function is basically a cheap method of ensuring the hint is different every click
+            // even if every other click might repeat randomly
+            fun getFromEquationDifferentTo(
+                equation: MathBinaryExpressionComponent?,
+                clickedOperator: MathOperator,
+                currentHint : GameHint
+            ): GameHint {
+                val hint = getFromEquation(equation, clickedOperator)
+                if(hint == currentHint) return GENERAL
+                return hint
+            }
+
+            // a method to return a GameHint enum both from some random selection and also
+            // contextual information such as the next required move and the wrong move the
+            // player just made
+            private fun getFromEquation(
                 equation: MathBinaryExpressionComponent?,
                 clickedOperator: MathOperator
             ): GameHint {
                 if (equation == null) return getHintFromClicked(clickedOperator)
 
-                //random 25% chance to give bracket hint as its not detected
-                if (Random.nextBoolean() && Random.nextBoolean()) {
+                //random 1/4 chance to give left right hint as its usually relevant
+                if (SettingsFragment.respectLeftRight && Random.nextInt(3) ==1) {
+                    return LEFT_TO_RIGHT_HINT
+                }
+
+                //random 1/3 chance to give bracket hint as its not detected
+                if (Random.nextInt(2) ==1) {
                     return BRACKET_HINT
                 }
+
+//                //random 1/6 chance to give the general hint
+//                if (Random.nextInt(5) ==1) {
+//                    return GENERAL
+//                }
 
                 //50% chance to give hint based on the incorrectly clicked operation or the actual next one
                 if (Random.nextBoolean()) {
@@ -219,8 +248,8 @@ class MathGame(val equations: List<ParsedMathEquation>) {
 
             }
 
+            //gets a context driven GameHint based on the actual next correct move to be made
             private fun getHintFromNext(equation: MathBinaryExpressionComponent): GameHint {
-
                 return when (equation.operator) {
                     MathOperator.MULTIPLY, MathOperator.DIVIDE -> NEXT_IS_MULTIPLY
                     MathOperator.POWER -> NEXT_IS_POWER
@@ -228,6 +257,7 @@ class MathGame(val equations: List<ParsedMathEquation>) {
                 }
             }
 
+            //gets a context driven GameHint based on the incorrect move made by the player
             private fun getHintFromClicked(clickedOperator: MathOperator): GameHint {
                 return when (clickedOperator) {
                     MathOperator.ADD, MathOperator.SUBTRACT -> NOT_PLUS
