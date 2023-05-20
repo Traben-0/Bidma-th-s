@@ -10,14 +10,19 @@ import android.view.Menu
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.lifecycle.lifecycleScope
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
+import androidx.room.Room
+import com.traben.bidmaths.leaderboard.LeaderBoard
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 
 const val PREFERENCES = "bidmaths_settings"
 const val LEFT_TO_RIGHT_KEY = "respect_left_to_right"
 const val HINT_KEY = "enable_hints"
-const val HIDE_RESULT_KEY = "hide_results"
+const val HIDE_LEADERBOARD_KEY = "leader_board_hidden"
 
 class SettingsFragment : PreferenceFragmentCompat() {
 
@@ -59,6 +64,9 @@ class SettingsFragment : PreferenceFragmentCompat() {
         buttonPreference?.setOnPreferenceClickListener{
             displayConfirmationDialogBox("Are you sure you want to reset the leaderboard?",
                 { dialog,_ ->
+                    lifecycleScope.launch(Dispatchers.IO) {
+                        clearDatabase()
+                    }
                     Toast.makeText(requireContext(), "Leaderboard reset.", Toast.LENGTH_SHORT).show()
                     dialog.dismiss()
                 },
@@ -70,8 +78,16 @@ class SettingsFragment : PreferenceFragmentCompat() {
         }
     }
 
+
+    private suspend fun clearDatabase() {
+        val database = Room.databaseBuilder(requireContext(), LeaderBoard::class.java, "leader-board")
+            .build()
+        database.getDao().clearAllEntries()
+        database.close()
+    }
+
     //useful elsewhere maybe
-    public fun displayConfirmationDialogBox(message : String, yes: DialogInterface.OnClickListener, no: DialogInterface.OnClickListener,context: Context) {
+    private fun displayConfirmationDialogBox(message : String, yes: DialogInterface.OnClickListener, no: DialogInterface.OnClickListener,context: Context) {
             val builder = AlertDialog.Builder(context)
             builder.setTitle("Confirmation")
                 .setMessage(message)
@@ -95,7 +111,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
         when (key) {
             LEFT_TO_RIGHT_KEY   ->  respectLeftRight =  sharedPreferences.getBoolean(key, false)
             HINT_KEY            ->  hintsEnabled =      sharedPreferences.getBoolean(key, false)
-            HIDE_RESULT_KEY     ->  hideResults =       sharedPreferences.getBoolean(key, false)
+            HIDE_LEADERBOARD_KEY->  hideLeaderboard =   sharedPreferences.getBoolean(key, false)
         }
     }
 
@@ -103,12 +119,12 @@ class SettingsFragment : PreferenceFragmentCompat() {
 
         var respectLeftRight = true
         var hintsEnabled = true
-        var hideResults = false
+        var hideLeaderboard = false
 
         fun initSettings(sharedPreferences: SharedPreferences?) {
             respectLeftRight = sharedPreferences?.getBoolean(LEFT_TO_RIGHT_KEY,true) ?: true
             hintsEnabled = sharedPreferences?.getBoolean(HINT_KEY,true) ?: true
-            hideResults = sharedPreferences?.getBoolean(HIDE_RESULT_KEY,false) ?: false
+            hideLeaderboard = sharedPreferences?.getBoolean(HIDE_LEADERBOARD_KEY,false) ?: false
         }
 
     }

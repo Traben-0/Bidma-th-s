@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
 import android.widget.Toast
+import androidx.core.view.isVisible
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.room.Room
@@ -42,25 +43,26 @@ class FinishedFragment : Fragment() {
             binding.medalIconShadow.setImageResource(R.drawable.baseline_thumb_down_24)
         }
 
-        binding.result.text = "score: "+ score.toString()
+        binding.result.text = "score: "+ MathGame.currentMathGame?.scoreGrade()
+        binding.resultShadow.text = binding.result.text
 
         binding.playAgainButton.setOnClickListener {
             lifecycleScope.launch(Dispatchers.IO) {
                 MathGame.loadNewGameInLastMode()
                 withContext(Dispatchers.Main) {
-                    val action = FinishedFragmentDirections.actionFinishedFragmentToSecondFragment(gameIteration = 0)
+                    val action = FinishedFragmentDirections.actionStartNewGame(gameIteration = 0)
                     findNavController().navigate(action)
                 }
 
             }
         }
         binding.returnToMenuButton.setOnClickListener {
-            findNavController().navigate(R.id.action_finishedFragment_to_FirstFragment)
+            findNavController().navigate(FinishedFragmentDirections.actionReturnToLanding())
         }
+
+        if(SettingsFragment.hideLeaderboard) binding.viewLeaderboardButton.isVisible = false
         binding.viewLeaderboardButton.setOnClickListener {
-//            MathGame.loadHardGame(SettingsFragment.respectLeftRight)
-//            val action =  LandingFragmentDirections.actionStartGame(gameIteration = 0)
-//            findNavController().navigate(action)
+            findNavController().navigate(FinishedFragmentDirections.actionOpenLeaderboard())
         }
 
         binding.submitButton.setOnClickListener{button->
@@ -98,10 +100,7 @@ class FinishedFragment : Fragment() {
         // Insert data
         val newData = LeaderboardEntry(name,MathGame.currentMathGame?.gameScore()?:0, MathGame.currentMathGame?.gameResultsDetailedInfo()?:"null")
         dao.insertData(newData)
-
-        // Retrieve data
-        val allData = dao.getAllData()
-        println("Map = $allData")
+        database.close()
     }
 
     private var animation : Animation? = null

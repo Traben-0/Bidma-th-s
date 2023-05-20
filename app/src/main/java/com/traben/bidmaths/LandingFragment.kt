@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.*
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
@@ -40,6 +41,11 @@ class LandingFragment : Fragment() {
         binding.hardButton.setOnClickListener {
             launchGameMode(MathGame.GameMode.HARD)
         }
+        if(SettingsFragment.hideLeaderboard) binding.leaderBoardButton.isVisible = false
+        binding.leaderBoardButton.setOnClickListener {
+            findNavController().navigate(LandingFragmentDirections.actionOpenLeaderboards())
+        }
+
         animation = AnimationUtils.loadAnimation(context, R.anim.pulse_wobble)
         val randomDuration = (500..1500).random() // Random duration between 500 and 1500 milliseconds
         animation?.duration = randomDuration.toLong()

@@ -3,28 +3,31 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/FirstFragment">
+    app:startDestination="@id/landing_fragment">
 
     <fragment
-        android:id="@+id/FirstFragment"
+        android:id="@+id/landing_fragment"
         android:name="com.traben.bidmaths.LandingFragment"
         android:label="Bid Ma(th)s"
         tools:layout="@layout/fragment_landing">
 
         <action
-            android:id="@+id/action_StartGame"
-            app:destination="@id/SecondFragment"
+            android:id="@+id/action_start_game"
+            app:destination="@id/game_fragment"
             app:enterAnim="@anim/enter"
             app:exitAnim="@android:anim/fade_out" >
 
         </action>
         <action
-            android:id="@+id/action_FirstFragment_to_settingsFragment"
-            app:destination="@id/settingsFragment" />
+            android:id="@+id/action_open_settings"
+            app:destination="@id/settings_fragment" />
+        <action
+            android:id="@+id/action_open_leaderboards"
+            app:destination="@id/leaderboard_fragment" />
     </fragment>
     <fragment
 
-        android:id="@+id/SecondFragment"
+        android:id="@+id/game_fragment"
         android:name="com.traben.bidmaths.ActivityFragment"
         android:label="Solve the equation!"
         tools:layout="@layout/fragment_activity">
@@ -35,36 +38,43 @@
             android:defaultValue="0" />
 
         <action
-            android:id="@+id/action_SecondFragment_to_FirstFragment"
-            app:destination="@id/FirstFragment">
+            android:id="@+id/action_return_to_landing"
+            app:destination="@id/landing_fragment">
 
         </action>
         <action
-            android:id="@+id/action_SecondFragment_self"
-            app:destination="@id/SecondFragment"
-            app:popUpTo="@+id/FirstFragment">
+            android:id="@+id/action_loop_game"
+            app:destination="@id/game_fragment"
+            app:popUpTo="@+id/landing_fragment">
 
         </action>
         <action
-            android:id="@+id/action_SecondFragment_to_finishedFragment"
-            app:destination="@id/finishedFragment"
-            app:popUpTo="@+id/FirstFragment"/>
+            android:id="@+id/action_finish_game"
+            app:destination="@id/finished_game_fragment"
+            app:popUpTo="@+id/landing_fragment"/>
 
     </fragment>
     <fragment
-        android:id="@+id/settingsFragment"
+        android:id="@+id/settings_fragment"
         android:name="com.traben.bidmaths.SettingsFragment"
-        android:label="SettingsFragment" />
+        android:label="Settings" />
     <fragment
-        android:id="@+id/finishedFragment"
+        android:id="@+id/finished_game_fragment"
         android:name="com.traben.bidmaths.FinishedFragment"
-        android:label="FinishedFragment" >
+        android:label="Finished" >
         <action
-            android:id="@+id/action_finishedFragment_to_FirstFragment"
-            app:destination="@id/FirstFragment" />
+            android:id="@+id/action_return_to_landing"
+            app:destination="@id/landing_fragment" />
         <action
-            android:id="@+id/action_finishedFragment_to_SecondFragment"
-            app:destination="@id/SecondFragment"
-            app:popUpTo="@+id/FirstFragment"/>
+            android:id="@+id/action_start_new_game"
+            app:destination="@id/game_fragment"
+            app:popUpTo="@+id/landing_fragment"/>
+        <action
+            android:id="@+id/action_open_leaderboard"
+            app:destination="@id/leaderboard_fragment" />
     </fragment>
+    <fragment
+        android:id="@+id/leaderboard_fragment"
+        android:name="com.traben.bidmaths.LeaderboardFragment"
+        android:label="Leaderboard" />
 </navigation>

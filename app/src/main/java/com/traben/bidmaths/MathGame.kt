@@ -1,8 +1,7 @@
 package com.traben.bidmaths
 
-import androidx.navigation.fragment.findNavController
 import com.traben.bidmaths.maths.ParsedMathEquation
-import kotlinx.coroutines.Dispatchers
+import kotlin.math.roundToInt
 
 class MathGame(val equations : List<ParsedMathEquation>) {
 
@@ -26,11 +25,24 @@ class MathGame(val equations : List<ParsedMathEquation>) {
 
         return "Wrong $count times in ${equations.size} rounds"
     }
-    fun gameScore() : Int{
-        var count = 0
+    fun gameScore(): Int {
+        val averageIncorrectPerEquation = averageScore()
+        // division number is an arbitrary choice it allows the users
+        // to get that many attempts at each question and still get a score between 0-100
+        return 100 - (averageIncorrectPerEquation * 100.0 / 2.25).toInt().coerceAtLeast(0).coerceAtMost(100)
+
+    }
+
+    private fun averageScore() : Double{
+        var totalTimesWrong = 0
         for (equation in equations)
-            count += equation.timesAnsweredWrong
-        return (100 - count / (equations.size * 3) *100).coerceAtLeast(0)
+            totalTimesWrong += equation.timesAnsweredWrong
+
+        return totalTimesWrong.toDouble() / equations.size.toDouble()
+    }
+
+    fun scoreGrade() : String{
+        return scoreToGrade(gameScore())
     }
 
     fun gameResultsDetailedInfo() :String{
@@ -64,6 +76,9 @@ class MathGame(val equations : List<ParsedMathEquation>) {
                  - equation:    $worstEquation
                  - timesWrong:  $worst
                  
+                Average:
+                 - timesWrong:  ${averageScore()}
+                 
                 All rounds:
             """.trimIndent())
         var i = 0
@@ -71,9 +86,9 @@ class MathGame(val equations : List<ParsedMathEquation>) {
             i++
             output.append("""
                 
-                Round #$i:
-                 - equation:    ${entry.key}
-                 - timesWrong:  ${entry.value}
+                > Round #$i:
+                   - equation:    ${entry.key}
+                   - timesWrong:  ${entry.value}
                  
             """.trimIndent())
         }
@@ -82,6 +97,21 @@ class MathGame(val equations : List<ParsedMathEquation>) {
 
 
     companion object{
+
+        private val gradesOrdered = listOf(
+            "F-","F","F+",
+            "E-","E","E+",
+            "D-","D","D+",
+            "C-","C","C+",
+            "B-","B","B+",
+            "A-","A","A+",
+            "S","S+","S++"
+        )
+
+        public fun scoreToGrade(score: Int) : String{
+            val gradeIndex : Double = score.coerceAtLeast(0).coerceAtMost(100) /5.0
+            return gradesOrdered[gradeIndex.roundToInt()]
+        }
         private fun loadEasyGame(){
             lastMode = GameMode.EASY
             val equationsForGame = mutableListOf<ParsedMathEquation>()

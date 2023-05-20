@@ -43,37 +43,31 @@
         >
 
         <TextView
+            style="@style/yellowy_text"
             android:id="@+id/textViewShadow"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:fontFamily="casual"
             android:text="  Pick a\ndifficulty"
-            android:textAllCaps="true"
             android:textColor="#000"
             android:textSize="36dp"
-            android:textStyle="bold"
-            android:typeface="sans"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            android:layout_marginStart="10dp"
-            android:layout_marginTop="5dp"
+            android:layout_marginStart="5dp"
+            android:layout_marginTop="3dp"
             android:alpha="0.5"/>
         <TextView
+            style="@style/yellowy_text"
             android:id="@+id/textView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:fontFamily="casual"
             android:text="  Pick a\ndifficulty"
-            android:textAllCaps="true"
-            android:textColor="#ffd5af"
             android:textSize="36dp"
-            android:textStyle="bold"
-            android:typeface="sans"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"/>
         <Button
+            style="@style/yellowy_text"
             android:id="@+id/easyButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -85,6 +79,7 @@
             app:layout_constraintTop_toBottomOf="@id/textView" />
 
         <Button
+            style="@style/yellowy_text"
             android:id="@+id/mediumButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -96,6 +91,7 @@
 
 
         <Button
+            style="@style/yellowy_text"
             android:id="@+id/hardButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -105,6 +101,7 @@
             app:layout_constraintTop_toBottomOf="@id/mediumButton" />
 
         <Button
+            style="@style/yellowy_text"
             android:id="@+id/leaderBoardButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

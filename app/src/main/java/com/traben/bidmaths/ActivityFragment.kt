@@ -44,7 +44,7 @@ class ActivityFragment : Fragment() {
                 binding.buttonFirst.text = MathGame.currentMathGame!!.gameResults()
                 binding.buttonFirst.isEnabled = true
                 binding.buttonFirst.setOnClickListener {
-                    findNavController().navigate(R.id.action_SecondFragment_to_FirstFragment)
+                    findNavController().navigate(ActivityFragmentDirections.actionReturnToLanding())
                 }
             }else{
                 //game is still in progress
@@ -57,7 +57,7 @@ class ActivityFragment : Fragment() {
                     binding.buttonFirst.text = if(MathGame.currentMathGame!!.isLastGame(args.gameIteration)) "Finish" else "Next"
                     if(MathGame.currentMathGame!!.isLastGame(args.gameIteration)){
                         binding.buttonFirst.setOnClickListener {
-                            findNavController().navigate(R.id.action_SecondFragment_to_finishedFragment)
+                            findNavController().navigate(ActivityFragmentDirections.actionFinishGame())
                         }
                     }
                 }
@@ -70,7 +70,7 @@ class ActivityFragment : Fragment() {
             }
         }else{
             //error
-            findNavController().navigate(R.id.action_SecondFragment_to_FirstFragment)
+            findNavController().navigate(ActivityFragmentDirections.actionReturnToLanding())
         }
         setHasOptionsMenu(true)
         return binding.root
@@ -91,7 +91,7 @@ class ActivityFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         binding.buttonFirst.setOnClickListener {
-            val action =  ActivityFragmentDirections.actionSecondFragmentSelf(
+            val action =  ActivityFragmentDirections.actionLoopGame(
                 gameIteration = args.gameIteration+1)
 
             findNavController().navigate(action)
