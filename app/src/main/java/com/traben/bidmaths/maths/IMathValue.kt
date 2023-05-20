@@ -9,28 +9,31 @@ interface IMathValue : ParsedMathEquation.IMathComponent {
     var isNegative: Boolean
     fun invert()
 
-    fun isValid() : Boolean {return false}
+    fun isValid(): Boolean {
+        return false
+    }
 
     fun setBrackets()
 
-    fun getValue() : Double
+    fun getValue(): Double
 
 
-    fun isResolved ():Boolean {return false}
+    fun isResolved(): Boolean {
+        return false
+    }
 
 
+    fun getAsView(expressionObject: ParsedMathEquation, context: Context): View
 
+    companion object {
 
-    fun getAsView(expressionObject : ParsedMathEquation, context: Context) : View
-    companion object{
-
-        fun getInvalid(why: String) : InvalidValue {
+        fun getInvalid(why: String): InvalidValue {
             return InvalidValue(why)
         }
 
     }
 
-    class InvalidValue(val why : String) : IMathValue{
+    class InvalidValue(val why: String) : IMathValue {
 
         override fun isValid(): Boolean {
             return false
@@ -40,13 +43,11 @@ interface IMathValue : ParsedMathEquation.IMathComponent {
         }
 
         override fun getValue(): Double {
-            return  Double.NaN
+            return Double.NaN
         }
 
 
-
-
-        override fun getAsView(expressionObject : ParsedMathEquation,context: Context): View {
+        override fun getAsView(expressionObject: ParsedMathEquation, context: Context): View {
             return TextView(context)
         }
 

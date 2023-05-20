@@ -15,7 +15,7 @@
             android:id="@+id/action_start_game"
             app:destination="@id/game_fragment"
             app:enterAnim="@anim/enter"
-            app:exitAnim="@android:anim/fade_out" >
+            app:exitAnim="@android:anim/fade_out">
 
         </action>
         <action
@@ -33,9 +33,9 @@
         tools:layout="@layout/fragment_activity">
         <argument
             android:name="gameIteration"
+            android:defaultValue="0"
             app:argType="integer"
-            app:nullable="false"
-            android:defaultValue="0" />
+            app:nullable="false" />
 
         <action
             android:id="@+id/action_return_to_landing"
@@ -51,7 +51,7 @@
         <action
             android:id="@+id/action_finish_game"
             app:destination="@id/finished_game_fragment"
-            app:popUpTo="@+id/landing_fragment"/>
+            app:popUpTo="@+id/landing_fragment" />
 
     </fragment>
     <fragment
@@ -61,14 +61,14 @@
     <fragment
         android:id="@+id/finished_game_fragment"
         android:name="com.traben.bidmaths.FinishedFragment"
-        android:label="Finished" >
+        android:label="Finished">
         <action
             android:id="@+id/action_return_to_landing"
             app:destination="@id/landing_fragment" />
         <action
             android:id="@+id/action_start_new_game"
             app:destination="@id/game_fragment"
-            app:popUpTo="@+id/landing_fragment"/>
+            app:popUpTo="@+id/landing_fragment" />
         <action
             android:id="@+id/action_open_leaderboard"
             app:destination="@id/leaderboard_fragment" />

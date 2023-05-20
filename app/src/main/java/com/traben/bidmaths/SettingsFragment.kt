@@ -30,7 +30,8 @@ class SettingsFragment : PreferenceFragmentCompat() {
 
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         // Retrieve the existing SharedPreferences instance
-        sharedPreferences = requireContext().getSharedPreferences(PREFERENCES, Context.MODE_PRIVATE);
+        sharedPreferences =
+            requireContext().getSharedPreferences(PREFERENCES, Context.MODE_PRIVATE);
 
         // Set the existing SharedPreferences instance to the preference manager
         preferenceManager.sharedPreferencesName = PREFERENCES;
@@ -60,14 +61,16 @@ class SettingsFragment : PreferenceFragmentCompat() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val buttonPreference : Preference? = findPreference("reset_leaderboard")
-        buttonPreference?.setOnPreferenceClickListener{
-            displayConfirmationDialogBox("Are you sure you want to reset the leaderboard?",
-                { dialog,_ ->
+        val buttonPreference: Preference? = findPreference("reset_leaderboard")
+        buttonPreference?.setOnPreferenceClickListener {
+            displayConfirmationDialogBox(
+                "Are you sure you want to reset the leaderboard?",
+                { dialog, _ ->
                     lifecycleScope.launch(Dispatchers.IO) {
                         clearDatabase()
                     }
-                    Toast.makeText(requireContext(), "Leaderboard reset.", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(requireContext(), "Leaderboard reset.", Toast.LENGTH_SHORT)
+                        .show()
                     dialog.dismiss()
                 },
                 { dialog, _ ->
@@ -80,20 +83,26 @@ class SettingsFragment : PreferenceFragmentCompat() {
 
 
     private suspend fun clearDatabase() {
-        val database = Room.databaseBuilder(requireContext(), LeaderBoard::class.java, "leader-board")
-            .build()
+        val database =
+            Room.databaseBuilder(requireContext(), LeaderBoard::class.java, "leader-board")
+                .build()
         database.getDao().clearAllEntries()
         database.close()
     }
 
     //useful elsewhere maybe
-    private fun displayConfirmationDialogBox(message : String, yes: DialogInterface.OnClickListener, no: DialogInterface.OnClickListener,context: Context) {
-            val builder = AlertDialog.Builder(context)
-            builder.setTitle("Confirmation")
-                .setMessage(message)
-                .setPositiveButton("Yes",yes)
-                .setNegativeButton("No",no)
-            builder.create().show()
+    private fun displayConfirmationDialogBox(
+        message: String,
+        yes: DialogInterface.OnClickListener,
+        no: DialogInterface.OnClickListener,
+        context: Context
+    ) {
+        val builder = AlertDialog.Builder(context)
+        builder.setTitle("Confirmation")
+            .setMessage(message)
+            .setPositiveButton("Yes", yes)
+            .setNegativeButton("No", no)
+        builder.create().show()
 
     }
 
@@ -109,22 +118,22 @@ class SettingsFragment : PreferenceFragmentCompat() {
 
     private fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, key: String) {
         when (key) {
-            LEFT_TO_RIGHT_KEY   ->  respectLeftRight =  sharedPreferences.getBoolean(key, false)
-            HINT_KEY            ->  hintsEnabled =      sharedPreferences.getBoolean(key, false)
-            HIDE_LEADERBOARD_KEY->  hideLeaderboard =   sharedPreferences.getBoolean(key, false)
+            LEFT_TO_RIGHT_KEY -> respectLeftRight = sharedPreferences.getBoolean(key, false)
+            HINT_KEY -> hintsEnabled = sharedPreferences.getBoolean(key, false)
+            HIDE_LEADERBOARD_KEY -> hideLeaderboard = sharedPreferences.getBoolean(key, false)
         }
     }
 
-    companion object{
+    companion object {
 
         var respectLeftRight = true
         var hintsEnabled = true
         var hideLeaderboard = false
 
         fun initSettings(sharedPreferences: SharedPreferences?) {
-            respectLeftRight = sharedPreferences?.getBoolean(LEFT_TO_RIGHT_KEY,true) ?: true
-            hintsEnabled = sharedPreferences?.getBoolean(HINT_KEY,true) ?: true
-            hideLeaderboard = sharedPreferences?.getBoolean(HIDE_LEADERBOARD_KEY,false) ?: false
+            respectLeftRight = sharedPreferences?.getBoolean(LEFT_TO_RIGHT_KEY, true) ?: true
+            hintsEnabled = sharedPreferences?.getBoolean(HINT_KEY, true) ?: true
+            hideLeaderboard = sharedPreferences?.getBoolean(HIDE_LEADERBOARD_KEY, false) ?: false
         }
 
     }

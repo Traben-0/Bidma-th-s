@@ -1,35 +1,33 @@
 <PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <!-- Switches Category -->
-    <PreferenceCategory
-        app:title="Game">
+    <PreferenceCategory app:title="Game">
 
         <SwitchPreferenceCompat
             app:key="respect_left_to_right"
-            app:title="Force 'left to right' solving"
-            app:summary="Equation contents must be solved\n 'left to right'" />
+            app:summary="Equation contents must be solved\n 'left to right'"
+            app:title="Force 'left to right' solving" />
 
         <SwitchPreferenceCompat
             app:key="enable_hints"
-            app:title="Enable hints"
-            app:summary="Show relevant hints during the game" />
+            app:summary="Show relevant hints during the game"
+            app:title="Enable hints" />
 
 
     </PreferenceCategory>
 
     <!-- Button Category -->
-    <PreferenceCategory
-        app:title="Leaderboard">
+    <PreferenceCategory app:title="Leaderboard">
 
         <SwitchPreferenceCompat
             app:key="leader_board_hidden"
-            app:title="Hide leaderboard"
-            app:summary="Hides the leaderboard from prying,\noverly competitive, eyes" />
+            app:summary="Hides the leaderboard from prying,\noverly competitive, eyes"
+            app:title="Hide leaderboard" />
 
         <Preference
             app:key="reset_leaderboard"
-            app:title="Reset leaderboard"
-            app:summary="Tap to clear the leaderboard of all entries" >
+            app:summary="Tap to clear the leaderboard of all entries"
+            app:title="Reset leaderboard">
 
 
         </Preference>

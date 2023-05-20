@@ -1,9 +1,12 @@
 package com.traben.bidmaths
 
 import android.os.Bundle
-import android.view.*
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
+import android.widget.LinearLayout
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
@@ -31,6 +34,10 @@ class LandingFragment : Fragment() {
 
         _binding = FragmentLandingBinding.inflate(inflater, container, false)
 
+        if (requireActivity() is MainActivity
+            && (requireActivity() as MainActivity).isLandscape(requireContext())) {
+            binding.root.orientation = LinearLayout.HORIZONTAL
+        }
 
         binding.easyButton.setOnClickListener {
             launchGameMode(MathGame.GameMode.EASY)
@@ -41,13 +48,14 @@ class LandingFragment : Fragment() {
         binding.hardButton.setOnClickListener {
             launchGameMode(MathGame.GameMode.HARD)
         }
-        if(SettingsFragment.hideLeaderboard) binding.leaderBoardButton.isVisible = false
+        if (SettingsFragment.hideLeaderboard) binding.leaderBoardButton.isVisible = false
         binding.leaderBoardButton.setOnClickListener {
             findNavController().navigate(LandingFragmentDirections.actionOpenLeaderboards())
         }
 
         animation = AnimationUtils.loadAnimation(context, R.anim.pulse_wobble)
-        val randomDuration = (500..1500).random() // Random duration between 500 and 1500 milliseconds
+        val randomDuration =
+            (500..1500).random() // Random duration between 500 and 1500 milliseconds
         animation?.duration = randomDuration.toLong()
 
 
@@ -56,8 +64,7 @@ class LandingFragment : Fragment() {
     }
 
 
-
-    private fun launchGameMode(mode : MathGame.GameMode){
+    private fun launchGameMode(mode: MathGame.GameMode) {
         lifecycleScope.launch(Dispatchers.IO) {
             MathGame.loadGameMode(mode)
             withContext(Dispatchers.Main) {
@@ -69,8 +76,7 @@ class LandingFragment : Fragment() {
     }
 
 
-
-    private var animation : Animation? = null
+    private var animation: Animation? = null
     override fun onResume() {
         super.onResume()
         binding.imageView.startAnimation(animation)
@@ -81,8 +87,6 @@ class LandingFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
     }
-
-
 
 
     override fun onPause() {

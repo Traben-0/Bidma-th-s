@@ -4,7 +4,7 @@ import android.content.Context
 import android.view.View
 import com.traben.bidmaths.maths.views.MathNumberView
 
-class MathNumber(var number : Double) : IMathValue {
+class MathNumber(var number: Double) : IMathValue {
 
 
     override fun isValid(): Boolean {
@@ -27,31 +27,30 @@ class MathNumber(var number : Double) : IMathValue {
 
     override fun toString(): String {
         val num = getValue()
-        val string = if ((num *100)% 1.0 != 0.0)
+        val string = if ((num * 100) % 1.0 != 0.0)
             String.format("%.2f..", num)
-        else  if (num % 1.0 != 0.0)
-             String.format("%.2f", num)
+        else if (num % 1.0 != 0.0)
+            String.format("%.2f", num)
         else if ((num * 10) % 1.0 != 0.0)
             String.format("%.1f", num)
         else
-             String.format("%.0f", num)
-        return if(hasBrackets) "($string)" else string
+            String.format("%.0f", num)
+        return if (hasBrackets) "($string)" else string
     }
-
-
 
 
     override var isNegative = false
 
-    override fun invert(){
-        isNegative = ! isNegative
+    override fun invert() {
+        isNegative = !isNegative
     }
 
 
-    override fun getAsView(expressionObject : ParsedMathEquation, context: Context): View {
+    override fun getAsView(expressionObject: ParsedMathEquation, context: Context): View {
         return MathNumberView(this, context)
     }
-    fun getAsView( context: Context): View {
+
+    fun getAsView(context: Context): View {
         return MathNumberView(this, context)
     }
 

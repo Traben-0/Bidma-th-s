@@ -8,7 +8,6 @@ import android.view.animation.AnimationUtils
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
-import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.room.Room
@@ -27,7 +26,11 @@ class LeaderboardFragment : Fragment() {
 
     private lateinit var adapter: LeaderboardAdapter
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
         _binding = FragmentLeaderboardBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -43,9 +46,10 @@ class LeaderboardFragment : Fragment() {
 
     }
 
-    private suspend fun getRecyclerViewAdapter() : LeaderboardAdapter{
-        val database = Room.databaseBuilder(requireContext(), LeaderBoard::class.java, "leader-board")
-            .build()
+    private suspend fun getRecyclerViewAdapter(): LeaderboardAdapter {
+        val database =
+            Room.databaseBuilder(requireContext(), LeaderBoard::class.java, "leader-board")
+                .build()
         val list = database.getDao().getAllDataScoreOrdered()
 
         val adapter = LeaderboardAdapter(
@@ -63,12 +67,11 @@ class LeaderboardFragment : Fragment() {
         return adapter
     }
 
-    private fun applyAdapter(adapter : LeaderboardAdapter){
+    private fun applyAdapter(adapter: LeaderboardAdapter) {
         this.adapter = adapter
         binding.recyclerView.layoutManager = LinearLayoutManager(context)
         binding.recyclerView.adapter = adapter
     }
-
 
 
     override fun onDestroyView() {
@@ -76,21 +79,24 @@ class LeaderboardFragment : Fragment() {
         _binding = null
     }
 
-    inner class LeaderboardAdapter(private val leaderboardEntries: List<LeaderboardEntry>) : RecyclerView.Adapter<LeaderboardAdapter.ViewHolder>() {
+    inner class LeaderboardAdapter(private val leaderboardEntries: List<LeaderboardEntry>) :
+        RecyclerView.Adapter<LeaderboardAdapter.ViewHolder>() {
 
-        inner class ViewHolder(private val binding: ItemLeaderboardEntryBinding) : RecyclerView.ViewHolder(binding.root) {
+        inner class ViewHolder(private val binding: ItemLeaderboardEntryBinding) :
+            RecyclerView.ViewHolder(binding.root) {
             fun bind(entry: LeaderboardEntry) {
                 val animation = AnimationUtils.loadAnimation(context, R.anim.pulse_wobble)
-                val randomDuration = 400+ (5..15).random() * (100-entry.score)
+                val randomDuration = 400 + (5..15).random() * (100 - entry.score)
                 animation?.duration = randomDuration.toLong()
                 binding.score.startAnimation(animation)
 
                 binding.name.text = entry.name
-                if (entry.score == -1){
+                if (entry.score == -1) {
                     binding.score.text = ""
                     binding.detailsButton.text = ""
-                    binding.detailsText.text = "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n"
-                }else {
+                    binding.detailsText.text =
+                        "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n"
+                } else {
                     binding.score.text = MathGame.scoreToGrade(entry.score)
                     binding.detailsButton.text = "< more details >"
                     binding.detailsText.text = entry.details
@@ -108,7 +114,11 @@ class LeaderboardFragment : Fragment() {
         }
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-            val binding = ItemLeaderboardEntryBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+            val binding = ItemLeaderboardEntryBinding.inflate(
+                LayoutInflater.from(parent.context),
+                parent,
+                false
+            )
             return ViewHolder(binding)
         }
 

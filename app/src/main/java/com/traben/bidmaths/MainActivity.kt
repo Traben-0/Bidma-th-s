@@ -1,18 +1,15 @@
 package com.traben.bidmaths
 
 import android.content.Context
+import android.content.res.Configuration
 import android.os.Bundle
+import android.view.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
-import android.view.Menu
-import android.view.MenuItem
-import androidx.navigation.NavController
-import androidx.navigation.NavDestination
 import com.traben.bidmaths.databinding.ActivityMainBinding
-
 
 
 class MainActivity : AppCompatActivity() {
@@ -67,5 +64,12 @@ class MainActivity : AppCompatActivity() {
                 || super.onSupportNavigateUp()
     }
 
+    fun isLandscape(context: Context): Boolean {
+        val windowManager = context.getSystemService(WINDOW_SERVICE) as WindowManager
+        val display: Display = windowManager.defaultDisplay
+        val rotation: Int = display.rotation
+        val isPortrait = rotation == Surface.ROTATION_0 || rotation == Surface.ROTATION_180
+        return ! isPortrait
+    }
 
 }

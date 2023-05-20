@@ -1,9 +1,9 @@
 package com.traben.bidmaths
 
 import com.traben.bidmaths.maths.ParsedMathEquation
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
 import org.junit.Test
-
-import org.junit.Assert.*
 
 /**
  * Unit testing made to check the validity of Math expression parsing into valid ParsedMathEquation objects
@@ -14,7 +14,7 @@ import org.junit.Assert.*
 class MathParserUnitTests {
 
     //generic method for testing environment to not be affected heavily by any changes in the process
-    private fun testAnswer(expression : String) : Float{
+    private fun testAnswer(expression: String): Double {
         return ParsedMathEquation.parseExpressionAndPrepare(expression).getAnswer()
     }
 
@@ -49,6 +49,7 @@ class MathParserUnitTests {
         assertEquals(0f, testAnswer("-2--2"))
         //subtraction test passed on first attempt
     }
+
     @Test
     fun multiplication_isCorrect() {
         assertEquals(4f, testAnswer("2*2"))
@@ -56,6 +57,7 @@ class MathParserUnitTests {
         assertEquals(35f, testAnswer("10+5*5"))
         // test passed on first attempt
     }
+
     @Test
     fun division_isCorrect() {
         assertEquals(3f, testAnswer("6/2"))
@@ -63,6 +65,7 @@ class MathParserUnitTests {
         assertEquals(11f, testAnswer("10+5/5"))
         // test passed on first attempt
     }
+
     @Test
     fun power_isCorrect() {
         assertEquals(4f, testAnswer("2^2"))
@@ -86,7 +89,7 @@ class MathParserUnitTests {
         //test passed on second attempt
     }
 
-    private fun doesExpressionFail(expression: String) : Boolean{
+    private fun doesExpressionFail(expression: String): Boolean {
         return ParsedMathEquation.parseExpressionAndPrepare(expression).getAnswer().isNaN()
     }
 
@@ -113,8 +116,8 @@ class MathParserUnitTests {
 
     @Test
     fun random_expression_creation_isCorrect() {
-        for (i in 1..250){
-            val exp =ParsedMathEquation.createRandomExpression(i)
+        for (i in 1..250) {
+            val exp = ParsedMathEquation.createRandomExpression(i)
             println("random output was: ${exp.validExpression}")
             assertTrue(exp.isValid())
         }

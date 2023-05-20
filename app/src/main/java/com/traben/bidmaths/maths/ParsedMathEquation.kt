@@ -7,95 +7,101 @@ import com.traben.bidmaths.SettingsFragment
 import java.util.*
 
 
-class ParsedMathEquation( val validExpression: MathBinaryExpressionComponent?){
+class ParsedMathEquation(val validExpression: MathBinaryExpressionComponent?) {
 
 
-    var timesAnsweredWrong : Int = 0
+    var timesAnsweredWrong: Int = 0
 
-    fun getAnswer() : Double{
+    fun getAnswer(): Double {
         return validExpression?.getValue() ?: Double.NaN
     }
 
-    fun isCompleted():Boolean{
-        return validExpression?.isResolved()?:false
+    fun isCompleted(): Boolean {
+        return validExpression?.isResolved() ?: false
     }
 
-    var completeAction : () -> Unit = {}
+    var completeAction: () -> Unit = {}
 
-    fun isValid() : Boolean {
+    fun isValid(): Boolean {
         return !getAnswer().isNaN()
     }
 
 
-    fun isNextOperationThisConsideringLeftToRight(operation : MathBinaryExpressionComponent): Boolean{
+    fun isNextOperationThisConsideringLeftToRight(operation: MathBinaryExpressionComponent): Boolean {
         if (!SettingsFragment.respectLeftRight) return true
         return operation == getNextOperation()
     }
 
-    private fun getNextOperation(): MathBinaryExpressionComponent? {
+    fun getNextOperation(): MathBinaryExpressionComponent? {
         return validExpression?.getNextOperation()
     }
 
     override fun toString(): String {
         //apply common notation for multiplying with brackets
-        return validExpression?.toString()?.replace("*(","(") ?: "NaN"
+        return validExpression?.toString()?.replace("*(", "(") ?: "NaN"
     }
 
     fun toStringPretty(): String {
         //apply common notation for multiplying with brackets
-        return validExpression?.toString()?.replace("*","×")?.replace("/","÷")?.replace("×(","(") ?: "NaN"
+        return validExpression?.toString()?.replace("*", "×")?.replace("/", "÷")?.replace("×(", "(")
+            ?: "NaN"
     }
 
-    fun getAsView(context: Context) : View {
+    fun getAsView(context: Context): View {
         return validExpression?.getAsView(this, context) ?: TextView(context)
     }
 
 
-    companion object{
+    companion object {
 
-        fun createRandomExpression( difficulty : Int) : ParsedMathEquation{
+        fun createRandomExpression(difficulty: Int): ParsedMathEquation {
             val diff = difficulty.coerceAtLeast(1).coerceAtMost(20)
-            val depth = 1 + difficulty/5
-            return  createRandomExpression(diff,depth,1)
+            val depth = 1 + difficulty / 5
+            return createRandomExpression(diff, depth, 1)
         }
-        private fun createRandomExpression( difficulty : Int,depth : Int, iterations : Int) : ParsedMathEquation{
+
+        private fun createRandomExpression(
+            difficulty: Int,
+            depth: Int,
+            iterations: Int
+        ): ParsedMathEquation {
             //max 10 attempts at generating a valid random expression
-            if(iterations > 10){
+            if (iterations > 10) {
                 // i'm not perfect lets pick from some known good examples as this is hopefully a rare
                 println("Failed to create random expression 10 times, defaulting to known expressions")
                 return parseExpressionAndPrepare(listOfGoodBackupExpressions.random())
             }
 
             //create a random structured expression
-            val generatedButNotValid = MathBinaryExpressionComponent.getRandom(difficulty,depth)
+            val generatedButNotValid = MathBinaryExpressionComponent.getRandom(difficulty, depth)
             //now simply abandon it as it is likely not order of operations valid
             // extract its string expression value and then validate that
-            generatedButNotValid.hasBrackets=false
+            generatedButNotValid.hasBrackets = false
             val stringExpression = generatedButNotValid.toString()
 
             val possiblyValidExpression = parseExpressionAndPrepare(stringExpression)
-            return if(possiblyValidExpression.isValid()){
+            return if (possiblyValidExpression.isValid()) {
                 possiblyValidExpression
-            }else{
+            } else {
                 //loop if was invalid
                 println("Failed #$iterations: $stringExpression")
                 //failures are expected as we construct them lazily and could easily have a divide by 0 result in the equation
-                createRandomExpression(difficulty,depth,iterations+1)
+                createRandomExpression(difficulty, depth, iterations + 1)
             }
         }
 
-        fun parseExpressionAndPrepare(expression : String) : ParsedMathEquation{
-            if(expression.isBlank()){
+        fun parseExpressionAndPrepare(expression: String): ParsedMathEquation {
+            if (expression.isBlank()) {
                 return ParsedMathEquation(null)
             }
             try {//just in case
-                val parsedResult : IMathValue = parseExpression(expression, false)
-                if(parsedResult.isValid() && parsedResult is MathBinaryExpressionComponent){
+                val parsedResult: IMathValue = parseExpression(expression, false)
+                if (parsedResult.isValid() && parsedResult is MathBinaryExpressionComponent) {
                     return ParsedMathEquation(parsedResult)
-                }else {
+                } else {
                     println("FAILED: $parsedResult")
                 }
-            }catch(e: java.lang.Exception){
+            } catch (e: java.lang.Exception) {
                 e.printStackTrace()
                 println("FAILED: ${e.cause}")
             }
@@ -103,10 +109,10 @@ class ParsedMathEquation( val validExpression: MathBinaryExpressionComponent?){
         }
 
 
-
         //parses a string expression, returning null if invalid
 
     }
+
     interface IMathComponent
 }
 
@@ -123,13 +129,14 @@ private val listOfGoodBackupExpressions = listOf(
     "35--76^43*26",
     "(8/3)*(19^-13)",
     "((-3^9^3)--2)+(-7+8)",
-    "7*(-10/9)/3-(-12-16)")
+    "7*(-10/9)/3-(-12-16)"
+)
 
-private fun parseExpression(expression : String, inBrackets : Boolean) : IMathValue{
+private fun parseExpression(expression: String, inBrackets: Boolean): IMathValue {
     //clear spaces
-    val formattedExpression = expression.replace(" ","")
+    val formattedExpression = expression.replace(" ", "")
 
-    if(formattedExpression.matches(Regex.fromLiteral("[^0-9\\.\\+\\-\\*/)(]"))){
+    if (formattedExpression.matches(Regex.fromLiteral("[^0-9\\.\\+\\-\\*/)(]"))) {
         // expression has illegal characters
         return IMathValue.getInvalid("has illegal characters")
     }
@@ -140,19 +147,19 @@ private fun parseExpression(expression : String, inBrackets : Boolean) : IMathVa
     val rollingRead = java.lang.StringBuilder()
 
     val stringIterator = formattedExpression.iterator()
-    while(stringIterator.hasNext()){
+    while (stringIterator.hasNext()) {
 
         val currentCharacter = stringIterator.nextChar()
 
         val operator = MathOperator.get(currentCharacter)
-        if(operator == MathOperator.NOT_VALID){
+        if (operator == MathOperator.NOT_VALID) {
             //add to rolling read and continue
             rollingRead.append(currentCharacter)
-        }else{
+        } else {
 
             //first catch any rolling read numbers
-            if(rollingRead.isNotEmpty()){
-                val number : Double = rollingRead.toString().toDoubleOrNull()
+            if (rollingRead.isNotEmpty()) {
+                val number: Double = rollingRead.toString().toDoubleOrNull()
                     ?: //invalid
                     return IMathValue.getInvalid("${rollingRead.toString()}, is not a valid number")
                 components.add(MathNumber(number))
@@ -160,24 +167,24 @@ private fun parseExpression(expression : String, inBrackets : Boolean) : IMathVa
             }
 
             //rolling read always empty here
-            when(operator){
+            when (operator) {
                 MathOperator.BRACKET_OPEN -> {
                     // if the last component was not an operator like '+' it must be an implicit multiply like 2(2+2) = 2*(2+2) or invalid, which will get resolved later
-                    if(!components.isEmpty() && components.last !is MathOperator){
+                    if (!components.isEmpty() && components.last !is MathOperator) {
                         components.add(MathOperator.MULTIPLY)
                     }
 
                     //utilise rolling read to extract nested expression string
                     var nesting = 1;
-                    while(stringIterator.hasNext()){
+                    while (stringIterator.hasNext()) {
                         val currentNestedCharacter = stringIterator.nextChar()
                         val operatorNested = MathOperator.get(currentNestedCharacter)
 
-                        if(operatorNested == MathOperator.BRACKET_OPEN ) {
+                        if (operatorNested == MathOperator.BRACKET_OPEN) {
                             nesting++
-                        }else if (operatorNested == MathOperator.BRACKET_CLOSED ){
+                        } else if (operatorNested == MathOperator.BRACKET_CLOSED) {
                             nesting--
-                            if(nesting == 0){
+                            if (nesting == 0) {
                                 break
                             }
                         }
@@ -185,13 +192,13 @@ private fun parseExpression(expression : String, inBrackets : Boolean) : IMathVa
 
                     }
                     //is invalid
-                    if(nesting != 0) return IMathValue.getInvalid("nesting did not synchronise with (")
+                    if (nesting != 0) return IMathValue.getInvalid("nesting did not synchronise with (")
                     //else rolling read has a fully contained nested expression
-                    val nestedExpression  = parseExpression(rollingRead.toString(),true)
-                    if(nestedExpression !is IMathValue.InvalidValue){
+                    val nestedExpression = parseExpression(rollingRead.toString(), true)
+                    if (nestedExpression !is IMathValue.InvalidValue) {
                         components.add(nestedExpression)
                         rollingRead.clear()
-                    } else{
+                    } else {
                         //invalid
                         return IMathValue.getInvalid("nested was invalid because: ${nestedExpression.why}")
                     }
@@ -206,8 +213,8 @@ private fun parseExpression(expression : String, inBrackets : Boolean) : IMathVa
         }
     }
     //catch any rolling read numbers left over for final component
-    if(rollingRead.isNotEmpty()){
-        val number : Double = rollingRead.toString().toDoubleOrNull()
+    if (rollingRead.isNotEmpty()) {
+        val number: Double = rollingRead.toString().toDoubleOrNull()
             ?: //invalid
             return IMathValue.getInvalid("${rollingRead.toString()}, is not a valid number")
         components.add(MathNumber(number))
@@ -215,11 +222,11 @@ private fun parseExpression(expression : String, inBrackets : Boolean) : IMathVa
     }
 
     //check components is not empty
-    if(components.isEmpty()) return IMathValue.getInvalid("no components after initial object parse")
+    if (components.isEmpty()) return IMathValue.getInvalid("no components after initial object parse")
 
 
     //skip if only 1 component
-    if(components.size > 1) {
+    if (components.size > 1) {
         // here we should have a components object containing parsed operators numbers and nested expressions
         // now we do some tricky shit
         // lets check the formatting and see if we can settle this into a binary tree to make things easier in runtime
@@ -350,17 +357,17 @@ private fun parseExpression(expression : String, inBrackets : Boolean) : IMathVa
     }
 
     //here componentsFinal should only be a list containing 1 single IMathValue
-    if(components.size != 1){
+    if (components.size != 1) {
         return IMathValue.getInvalid("final didn't resolve to 1 component: $components")
     }
 
     // this is a IMathValue either a MathNumber or a binary tree of MathBinaryExpressionComponents
     // with each binary branch ending on a MathNumber
 
-    return if (components.first is IMathValue ) {
-        if(inBrackets) (components.first as IMathValue).setBrackets()
+    return if (components.first is IMathValue) {
+        if (inBrackets) (components.first as IMathValue).setBrackets()
         components.first as IMathValue
-    }else {
+    } else {
         IMathValue.getInvalid("final wasn't a math value, likely invalid: $components")
     }
 }

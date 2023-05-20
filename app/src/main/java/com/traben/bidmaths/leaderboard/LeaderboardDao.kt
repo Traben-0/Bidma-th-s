@@ -12,6 +12,7 @@ interface LeaderboardDao {
 
     @Query("DELETE FROM leader_board;")
     fun clearAllEntries()
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertData(data: LeaderboardEntry)
 
