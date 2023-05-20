@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.Menu
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
@@ -39,6 +40,11 @@ class ActivityFragment : Fragment() {
 
             //easier than data binding :/
             MathGame.currentMathGame?.hintDisplay = binding.hintText
+
+            // give hint option functionality
+            if (!SettingsFragment.hintsEnabled){
+                binding.hintText.isVisible = false
+            }
 
             //game is still in progress
             equation = MathGame.currentMathGame!!.getEquation(args.gameIteration)

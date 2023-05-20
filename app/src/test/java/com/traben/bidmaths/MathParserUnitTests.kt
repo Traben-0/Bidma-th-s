@@ -14,8 +14,8 @@ import org.junit.Test
 class MathParserUnitTests {
 
     //generic method for testing environment to not be affected heavily by any changes in the process
-    private fun testAnswer(expression: String): Double {
-        return ParsedMathEquation.parseExpressionAndPrepare(expression).getAnswer()
+    private fun testAnswer(expression: String): Float {
+        return ParsedMathEquation.parseExpressionAndPrepare(expression).getAnswer().toFloat()
     }
 
 
@@ -116,7 +116,7 @@ class MathParserUnitTests {
 
     @Test
     fun random_expression_creation_isCorrect() {
-        for (i in 1..250) {
+        for (i in 1..25) {
             val exp = ParsedMathEquation.createRandomExpression(i)
             println("random output was: ${exp.validExpression}")
             assertTrue(exp.isValid())

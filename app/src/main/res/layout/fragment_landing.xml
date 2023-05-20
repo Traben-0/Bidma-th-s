@@ -59,12 +59,11 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="5dp"
-            android:layout_marginTop="5dp"
+            android:layout_marginTop="3dp"
             android:alpha="0.5"
             android:text="  Pick a\ndifficulty"
             android:textColor="#000"
             android:textSize="36dp"
-            app:layout_constraintBottom_toTopOf="@id/easyButton"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -86,7 +85,6 @@
             style="@style/yellowy_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
             android:text="easy"
             app:layout_constraintBottom_toTopOf="@id/mediumButton"
             app:layout_constraintEnd_toEndOf="parent"
@@ -111,6 +109,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="hard"
+            app:layout_constraintBottom_toTopOf="@id/leaderBoardButton"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/mediumButton" />
@@ -120,12 +119,11 @@
             style="@style/yellowy_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="175dp"
             android:text="leaderboard"
             app:layout_constraintBottom_toBottomOf="@id/hardButton"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/mediumButton" />
+            app:layout_constraintTop_toBottomOf="parent" />
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>
