@@ -1,7 +1,6 @@
 package com.traben.bidmaths
 
 import android.content.Context
-import android.content.res.Configuration
 import android.os.Bundle
 import android.view.*
 import androidx.appcompat.app.AppCompatActivity
@@ -33,10 +32,6 @@ class MainActivity : AppCompatActivity() {
 
         setupActionBarWithNavController(navController, appBarConfiguration)
 
-//        binding.fab.setOnClickListener { view ->
-//            Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-//                .setAction("Action", null).show()
-//        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -69,7 +64,7 @@ class MainActivity : AppCompatActivity() {
         val display: Display = windowManager.defaultDisplay
         val rotation: Int = display.rotation
         val isPortrait = rotation == Surface.ROTATION_0 || rotation == Surface.ROTATION_180
-        return ! isPortrait
+        return !isPortrait
     }
 
 }

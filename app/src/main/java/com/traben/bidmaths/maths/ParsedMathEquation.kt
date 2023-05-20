@@ -161,7 +161,7 @@ private fun parseExpression(expression: String, inBrackets: Boolean): IMathValue
             if (rollingRead.isNotEmpty()) {
                 val number: Double = rollingRead.toString().toDoubleOrNull()
                     ?: //invalid
-                    return IMathValue.getInvalid("${rollingRead.toString()}, is not a valid number")
+                    return IMathValue.getInvalid("$rollingRead, is not a valid number")
                 components.add(MathNumber(number))
                 rollingRead.clear()
             }
@@ -175,7 +175,7 @@ private fun parseExpression(expression: String, inBrackets: Boolean): IMathValue
                     }
 
                     //utilise rolling read to extract nested expression string
-                    var nesting = 1;
+                    var nesting = 1
                     while (stringIterator.hasNext()) {
                         val currentNestedCharacter = stringIterator.nextChar()
                         val operatorNested = MathOperator.get(currentNestedCharacter)
@@ -216,7 +216,7 @@ private fun parseExpression(expression: String, inBrackets: Boolean): IMathValue
     if (rollingRead.isNotEmpty()) {
         val number: Double = rollingRead.toString().toDoubleOrNull()
             ?: //invalid
-            return IMathValue.getInvalid("${rollingRead.toString()}, is not a valid number")
+            return IMathValue.getInvalid("$rollingRead, is not a valid number")
         components.add(MathNumber(number))
         rollingRead.clear()
     }

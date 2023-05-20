@@ -40,11 +40,11 @@ class ActivityFragment : Fragment() {
 
             //easier than data binding :/
             MathGame.currentMathGame?.hintSetter = {
-                binding?.hintText?.text = it
+                binding.hintText.text = it
             }
 
             // give hint option functionality
-            if (!SettingsFragment.hintsEnabled){
+            if (!SettingsFragment.hintsEnabled) {
                 binding.hintText.isVisible = false
             }
 
@@ -54,33 +54,39 @@ class ActivityFragment : Fragment() {
 
             equation.completeAction = {
                 //this lambda is run when the equation is completed
-                binding.buttonFirst.isEnabled = true
-                binding.buttonFirst.text =
+                binding.nextButton.isEnabled = true
+                binding.nextButton.text =
                     if (MathGame.currentMathGame!!.isLastGame(args.gameIteration)) "Finish" else "Next"
                 if (MathGame.currentMathGame!!.isLastGame(args.gameIteration)) {
-                    binding.buttonFirst.setOnClickListener {
+                    binding.nextButton.setOnClickListener {
                         findNavController().navigate(ActivityFragmentDirections.actionFinishGame())
                     }
                 }
             }
 
+            //build our equation as a nest of binary like views
             binding.content.removeAllViews()
             binding.content.addView(context?.let { equation.getAsView(it) })
 
-            binding.buttonFirst.isEnabled = false
-            binding.buttonFirst.text =
-                "Game ${args.gameIteration + 1} / ${MathGame.currentMathGame!!.equations.size}"
+            //disable the continue button
+            binding.nextButton.isEnabled = false
+
+            val gameLength : String = MathGame.currentMathGame!!.equations.size.toString()
+            val gameIteration : String = (args.gameIteration + 1).toString()
+            binding.nextButton.text = getString(R.string.next_button_disabled_string,gameIteration,gameLength)
+               // "Game ${args.gameIteration + 1} / ${MathGame.currentMathGame!!.equations.size}"
 
         } else {
             //error
             findNavController().navigate(ActivityFragmentDirections.actionReturnToLanding())
         }
+        //this hides the options menu
         setHasOptionsMenu(true)
         return binding.root
 
     }
 
-
+    //this hides the options menu
     @Deprecated("Deprecated in Java")
     override fun onPrepareOptionsMenu(menu: Menu) {
         super.onPrepareOptionsMenu(menu)
@@ -92,14 +98,11 @@ class ActivityFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.buttonFirst.setOnClickListener {
+        binding.nextButton.setOnClickListener {
             val action = ActivityFragmentDirections.actionLoopGame(
                 gameIteration = args.gameIteration + 1
             )
-
             findNavController().navigate(action)
-            //findNavController().navigate(R.id.action_SecondFragment_self,
-
         }
     }
 

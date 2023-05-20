@@ -35,7 +35,8 @@ class LandingFragment : Fragment() {
         _binding = FragmentLandingBinding.inflate(inflater, container, false)
 
         if (requireActivity() is MainActivity
-            && (requireActivity() as MainActivity).isLandscape(requireContext())) {
+            && (requireActivity() as MainActivity).isLandscape(requireContext())
+        ) {
             binding.root.orientation = LinearLayout.HORIZONTAL
         }
 
@@ -83,16 +84,6 @@ class LandingFragment : Fragment() {
         binding.imageViewShadow.startAnimation(animation)
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
-    }
-
-
-    override fun onPause() {
-        super.onPause()
-
-    }
 
     override fun onDestroyView() {
         super.onDestroyView()

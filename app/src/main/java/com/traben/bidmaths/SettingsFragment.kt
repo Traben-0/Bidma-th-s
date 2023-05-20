@@ -31,11 +31,11 @@ class SettingsFragment : PreferenceFragmentCompat() {
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         // Retrieve the existing SharedPreferences instance
         sharedPreferences =
-            requireContext().getSharedPreferences(PREFERENCES, Context.MODE_PRIVATE);
+            requireContext().getSharedPreferences(PREFERENCES, Context.MODE_PRIVATE)
 
         // Set the existing SharedPreferences instance to the preference manager
-        preferenceManager.sharedPreferencesName = PREFERENCES;
-        preferenceManager.sharedPreferencesMode = Context.MODE_PRIVATE;
+        preferenceManager.sharedPreferencesName = PREFERENCES
+        preferenceManager.sharedPreferencesMode = Context.MODE_PRIVATE
 
         setPreferencesFromResource(R.xml.root_preferences, rootKey)
 

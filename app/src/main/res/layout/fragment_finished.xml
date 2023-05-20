@@ -4,15 +4,14 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/ic_launcher_background"
-    android:orientation="vertical"
-    >
+    android:orientation="vertical">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/top_holder"
         android:layout_width="350dp"
         android:layout_height="350dp"
-        android:background="@drawable/share_background"
         android:layout_gravity="center"
+        android:background="@drawable/share_background"
         app:layout_constraintBottom_toTopOf="@id/bottom_holder"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -35,11 +34,11 @@
                 android:layout_marginTop="10dp"
                 android:alpha="0.5"
                 android:src="@drawable/logo"
-                app:tint="#000000"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="parent"
+                app:tint="#000000" />
 
 
             <ImageView
@@ -53,14 +52,13 @@
                 app:layout_constraintTop_toTopOf="parent" />
 
 
-
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <ImageView
-            android:layout_marginTop="60dp"
             android:id="@+id/medal_icon_shadow"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="60dp"
             android:layout_marginBottom="35dp"
             android:alpha="0.5"
             android:src="@drawable/baseline_thumb_up_24"
@@ -72,10 +70,10 @@
             app:tint="#000" />
 
         <ImageView
-            android:layout_marginTop="60dp"
             android:id="@+id/medal_icon"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="60dp"
             android:layout_marginBottom="10dp"
             android:src="@drawable/baseline_thumb_up_24"
             android:tint="#ffd5af"

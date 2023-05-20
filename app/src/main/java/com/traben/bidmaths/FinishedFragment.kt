@@ -4,10 +4,8 @@ import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.net.Uri
-import android.opengl.Visibility
 import android.os.Bundle
 import android.provider.MediaStore
-import android.service.autofill.VisibilitySetterAction
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -44,7 +42,8 @@ class FinishedFragment : Fragment() {
         _binding = FragmentFinishedBinding.inflate(inflater, container, false)
 
         if (requireActivity() is MainActivity
-            && (requireActivity() as MainActivity).isLandscape(requireContext())) {
+            && (requireActivity() as MainActivity).isLandscape(requireContext())
+        ) {
             binding.root.orientation = LinearLayout.HORIZONTAL
         }
 
@@ -115,16 +114,25 @@ class FinishedFragment : Fragment() {
             val scoreLayout = binding.topHolder
             scoreLayout.measure(
                 View.MeasureSpec.makeMeasureSpec(
-                    requireContext().resources.displayMetrics.widthPixels, View.MeasureSpec.EXACTLY),
+                    requireContext().resources.displayMetrics.widthPixels, View.MeasureSpec.EXACTLY
+                ),
                 View.MeasureSpec.makeMeasureSpec(
-                    requireContext().resources.displayMetrics.heightPixels, View.MeasureSpec.EXACTLY))
+                    requireContext().resources.displayMetrics.heightPixels, View.MeasureSpec.EXACTLY
+                )
+            )
             scoreLayout.layout(0, 0, scoreLayout.measuredWidth, scoreLayout.measuredHeight)
             val bitmap = Bitmap.createBitmap(
                 scoreLayout.measuredWidth,
-                scoreLayout.measuredHeight/2,
-                Bitmap.Config.ARGB_8888)
+                scoreLayout.measuredHeight / 2,
+                Bitmap.Config.ARGB_8888
+            )
             val canvas = Canvas(bitmap)
-            scoreLayout.layout(scoreLayout.left, scoreLayout.top, scoreLayout.right, scoreLayout.bottom/2)
+            scoreLayout.layout(
+                scoreLayout.left,
+                scoreLayout.top,
+                scoreLayout.right,
+                scoreLayout.bottom / 2
+            )
             scoreLayout.draw(canvas)
             binding.logoHidden.visibility = View.INVISIBLE
 
@@ -133,16 +141,18 @@ class FinishedFragment : Fragment() {
                     requireActivity().contentResolver,
                     bitmap,
                     "GameScoreImage",
-                    null)
+                    null
+                )
                 return Uri.parse(imagePath)
             }
-        }catch (_:java.lang.Exception) {}
+        } catch (_: java.lang.Exception) {
+        }
         return null
     }
 
     private fun shareScore() {
         val imageUri = getScoreImageUri()
-        if(imageUri != null) {
+        if (imageUri != null) {
             val shareIntent = Intent(Intent.ACTION_SEND)
             shareIntent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
             shareIntent.putExtra(Intent.EXTRA_STREAM, imageUri)
@@ -150,11 +160,6 @@ class FinishedFragment : Fragment() {
             shareIntent.type = "image/*"
             startActivity(Intent.createChooser(shareIntent, "Share via"))
         }
-    }
-
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
     }
 
 

@@ -1,4 +1,4 @@
-package com.traben.bidmaths.maths.views;
+package com.traben.bidmaths.maths.views
 
 import android.content.Context
 import android.util.AttributeSet

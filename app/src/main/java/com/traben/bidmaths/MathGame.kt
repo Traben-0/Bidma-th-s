@@ -1,6 +1,5 @@
 package com.traben.bidmaths
 
-import android.widget.TextView
 import com.traben.bidmaths.maths.MathBinaryExpressionComponent
 import com.traben.bidmaths.maths.MathOperator
 import com.traben.bidmaths.maths.ParsedMathEquation
@@ -13,7 +12,7 @@ class MathGame(val equations: List<ParsedMathEquation>) {
     private var currentHint = GameHint.GENERAL
 
     //was easier then data binding, sue me
-    var hintSetter : (String)->Unit = {}
+    var hintSetter: (String) -> Unit = {}
 
     //updates the current game hint given certain context
     fun updateHint(operatorClicked: MathOperator) {
@@ -26,6 +25,7 @@ class MathGame(val equations: List<ParsedMathEquation>) {
     }
 
     var lastEquation: ParsedMathEquation? = null
+
     fun getEquation(index: Int): ParsedMathEquation {
         lastEquation = equations[index]
         return equations[index]
@@ -126,7 +126,7 @@ class MathGame(val equations: List<ParsedMathEquation>) {
             "A-", "A", "A+"
         )
 
-        public fun scoreToGrade(score: Int): String {
+        fun scoreToGrade(score: Int): String {
             val gradeIndex: Double = score.coerceAtLeast(0).coerceAtMost(100) / 5.0
             return gradesOrdered[gradeIndex.roundToInt()]
         }
@@ -199,9 +199,10 @@ class MathGame(val equations: List<ParsedMathEquation>) {
         NOT_POWER("Something is preventing this Index (^) from resolving, perhaps the index value itself isn't resolved, or there are brackets needing resolution first."),
         GENERAL("Remember the order of operations: Brackets -> Orders -> Division & Multiplication -> Addition & Subtraction");
 
-        fun getMessage() : String{
+        fun getMessage(): String {
             return "Hint: ${this.message}"
         }
+
         companion object {
 
             // this function is basically a cheap method of ensuring the hint is different every click
@@ -209,10 +210,10 @@ class MathGame(val equations: List<ParsedMathEquation>) {
             fun getFromEquationDifferentTo(
                 equation: MathBinaryExpressionComponent?,
                 clickedOperator: MathOperator,
-                currentHint : GameHint
+                currentHint: GameHint
             ): GameHint {
                 val hint = getFromEquation(equation, clickedOperator)
-                if(hint == currentHint) return GENERAL
+                if (hint == currentHint) return GENERAL
                 return hint
             }
 
@@ -226,12 +227,12 @@ class MathGame(val equations: List<ParsedMathEquation>) {
                 if (equation == null) return getHintFromClicked(clickedOperator)
 
                 //random 1/4 chance to give left right hint as its usually relevant
-                if (SettingsFragment.respectLeftRight && Random.nextInt(3) ==1) {
+                if (SettingsFragment.respectLeftRight && Random.nextInt(3) == 1) {
                     return LEFT_TO_RIGHT_HINT
                 }
 
                 //random 1/3 chance to give bracket hint as its not detected
-                if (Random.nextInt(2) ==1) {
+                if (Random.nextInt(2) == 1) {
                     return BRACKET_HINT
                 }
 
