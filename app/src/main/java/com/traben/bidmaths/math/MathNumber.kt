@@ -20,7 +20,7 @@ class MathNumber(private var number: Double) : IMathValue {
         return if (isNegative) -number else number
     }
 
-    var hasBrackets = false
+    private var hasBrackets = false
     override fun setBrackets() {
         hasBrackets = true
     }

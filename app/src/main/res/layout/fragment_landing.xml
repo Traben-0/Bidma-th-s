@@ -23,6 +23,7 @@
             android:layout_height="match_parent"
             android:layout_marginStart="10dp"
             android:layout_marginTop="10dp"
+            android:importantForAccessibility="no"
             android:alpha="0.5"
             android:src="@drawable/logo"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -37,6 +38,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:src="@drawable/logo"
+            android:importantForAccessibility="no"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -65,7 +67,8 @@
             android:textSize="36dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            tools:ignore="VisualLintOverlap" />
 
         <TextView
             android:id="@+id/textView"
@@ -88,7 +91,8 @@
             app:layout_constraintBottom_toTopOf="@id/mediumButton"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/textView" />
+            app:layout_constraintTop_toBottomOf="@id/textView"
+            tools:ignore="VisualLintButtonSize" />
 
         <Button
             android:id="@+id/mediumButton"
@@ -99,7 +103,8 @@
             app:layout_constraintBottom_toBottomOf="@id/hardButton"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/easyButton" />
+            app:layout_constraintTop_toBottomOf="@id/easyButton"
+            tools:ignore="VisualLintButtonSize" />
 
 
         <Button
@@ -111,7 +116,8 @@
             app:layout_constraintBottom_toTopOf="@id/leaderBoardButton"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/mediumButton" />
+            app:layout_constraintTop_toBottomOf="@id/mediumButton"
+            tools:ignore="VisualLintButtonSize" />
 
         <Button
             android:id="@+id/leaderBoardButton"
@@ -122,7 +128,8 @@
             app:layout_constraintBottom_toBottomOf="@id/hardButton"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="parent" />
+            app:layout_constraintTop_toBottomOf="parent"
+            tools:ignore="VisualLintButtonSize" />
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>

@@ -41,7 +41,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="top"
-            android:text="button"
+            android:text="@string/button"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/contentHolder" />
@@ -53,7 +53,7 @@
             android:layout_height="wrap_content"
             android:paddingStart="25dp"
             android:paddingEnd="25dp"
-            android:text="Hint: click on the next operator that needs to be solved: + - × ÷ ^"
+            android:text="@string/hint_click_on_the_next_operator_that_needs_to_be_solved"
             android:textAllCaps="false"
             android:textSize="24sp"
             android:textStyle="normal"

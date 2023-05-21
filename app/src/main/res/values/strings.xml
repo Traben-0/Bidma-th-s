@@ -2,11 +2,7 @@
     <string name="app_name">Bidma(th)s</string>
     <string name="action_settings">Settings</string>
     <!-- Strings used for fragments for navigation -->
-    <string name="first_fragment_label">Bidma(th)s</string>
-    <string name="second_fragment_label">Solve the expression!</string>
     <string name="next">Next</string>
-    <string name="previous">Previous</string>
-
 
 
     <string name="delete_leaderboard_sure">Are you sure you want to reset the leaderboard?</string>
@@ -42,4 +38,14 @@
     <string name="empty_leaderboard">No entries yet :)\nplay a game and save your score</string>
     <string name="finished_score_display">Score: %s</string>
     <string name="next_button_disabled_string">Game %s / %s</string>
+    <string name="hint_click_on_the_next_operator_that_needs_to_be_solved">Hint: click on the next operator that needs to be solved: + - × ÷ ^</string>
+    <string name="button">button</string>
+    <string name="save">Save</string>
+    <string name="name_input">Name here…</string>
+    <string name="play_again">Play Again</string>
+    <string name="return_menu">Return to Menu</string>
+    <string name="view_leaderboard">View Leaderboard</string>
+    <string name="share_score">Share score ➦</string>
+    <string name="name">Name</string>
+    <string name="a_plus">A+</string>
 </resources>
