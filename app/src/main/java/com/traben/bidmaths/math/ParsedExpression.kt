@@ -198,7 +198,7 @@ private fun parseExpression(expression: String, inBrackets: Boolean): IMathValue
     var components = LinkedList<ParsedExpression.IMathComponent>()
 
     //rolling read keeps track of the last few unused iterations of characters
-    val rollingRead = java.lang.StringBuilder()
+    val rollingCharRead = java.lang.StringBuilder()
 
     val expressionStringIterator = formattedExpression.iterator()
     while (expressionStringIterator.hasNext()) {
@@ -208,16 +208,17 @@ private fun parseExpression(expression: String, inBrackets: Boolean): IMathValue
         val operator = MathOperator.getFromChar(currentCharacter)
         if (operator == MathOperator.NOT_VALID) {
             //add to rolling read and continue
-            rollingRead.append(currentCharacter)
+            rollingCharRead.append(currentCharacter)
         } else {
 
             //first catch any rolling read numbers
-            if (rollingRead.isNotEmpty()) {
-                val number: Double = rollingRead.toString().toDoubleOrNull()
+            //e.g. when operator == + in (2+2) then rolling read contains "2" which needs to be added as a number first
+            if (rollingCharRead.isNotEmpty()) {
+                val number: Double = rollingCharRead.toString().toDoubleOrNull()
                     ?: //invalid
-                    return IMathValue.getInvalid("$rollingRead, is not a valid number")
+                    return IMathValue.getInvalid("$rollingCharRead, is not a valid number")
                 components.add(MathNumber(number))
-                rollingRead.clear()
+                rollingCharRead.clear()
             }
 
             //rolling read always empty here
@@ -242,16 +243,18 @@ private fun parseExpression(expression: String, inBrackets: Boolean): IMathValue
                                 break
                             }
                         }
-                        rollingRead.append(currentNestedCharacter)
+                        rollingCharRead.append(currentNestedCharacter)
 
                     }
                     //is invalid
-                    if (nesting != 0) return IMathValue.getInvalid("nesting did not synchronise with (")
+                    if (nesting != 0) return IMathValue.getInvalid("nesting did not synchronise with bracket starts and ends")
                     //else rolling read has a fully contained nested expression
-                    val nestedExpression = parseExpression(rollingRead.toString(), true)
+                    // iterate it through this very same method
+                    // this provides a brackets first functionality implicitly
+                    val nestedExpression = parseExpression(rollingCharRead.toString(), true)
                     if (nestedExpression !is IMathValue.InvalidValue) {
                         components.add(nestedExpression)
-                        rollingRead.clear()
+                        rollingCharRead.clear()
                     } else {
                         //invalid
                         return IMathValue.getInvalid("nested was invalid because: ${nestedExpression.why}")
@@ -259,20 +262,20 @@ private fun parseExpression(expression: String, inBrackets: Boolean): IMathValue
                 }
                 MathOperator.BRACKET_CLOSED -> {
                     //should not happen this is invalid
-                    return IMathValue.getInvalid("nesting did not synchronise with )")
+                    return IMathValue.getInvalid("nesting did not synchronise with bracket ends")
                 }
-
+                //ELSE +, -, /, *, ^
                 else -> components.add(operator)
             }
         }
     }
     //catch any rolling read numbers left over for final component
-    if (rollingRead.isNotEmpty()) {
-        val number: Double = rollingRead.toString().toDoubleOrNull()
+    if (rollingCharRead.isNotEmpty()) {
+        val number: Double = rollingCharRead.toString().toDoubleOrNull()
             ?: //invalid
-            return IMathValue.getInvalid("$rollingRead, is not a valid number")
+            return IMathValue.getInvalid("$rollingCharRead, is not a valid number")
         components.add(MathNumber(number))
-        rollingRead.clear()
+        rollingCharRead.clear()
     }
 
     //check components is not empty
@@ -284,11 +287,12 @@ private fun parseExpression(expression: String, inBrackets: Boolean): IMathValue
         // here we should have a components object containing parsed operators numbers and nested expressions
         // now we do some tricky shit
         // lets check the formatting and see if we can settle this into a binary tree to make things easier in runtime
-        // if we can resolve to binary expressions it will effectively have the bomdas ordering innately
+        // if we can resolve to binary expressions it will effectively have the bidmas ordering innately
 
-        //todo add checks at each stage for if that step is even required, would cut down on iterations needed
+        //these steps can be further optimized by checking if the components contains those operators
+        //before even doing them but for now I will keep it simple unless a significant performance concern arises
 
-        //parse out negative numbers, into inverted ImathValues
+        //parse out negative numbers, into inverted IMathValues
         val componentsNegative = LinkedList<ParsedExpression.IMathComponent>()
         val iteratorNegative = components.iterator()
 
@@ -335,17 +339,18 @@ private fun parseExpression(expression: String, inBrackets: Boolean): IMathValue
 
         //resolve powers into binary expression component
         //check these right to left as that is the ordering for powers when written with ^ notation
+        // think of what 2^2^2^2 would be to understand why we do right to left (2^(2^(2^2)))
         val componentsPower = LinkedList<ParsedExpression.IMathComponent>()
         val iteratorPower = componentsNegative.reversed().iterator()
         while (iteratorPower.hasNext()) {
             val currentComponent = iteratorPower.next()
             if (currentComponent == MathOperator.POWER) {
                 if (!iteratorPower.hasNext() || componentsPower.size < 1) return IMathValue.getInvalid(
-                    "power doesnt have component both sides: [$components]:[$componentsNegative]"
+                    "power doesn't have component both sides: [$components]:[$componentsNegative]"
                 )
                 val left = iteratorPower.next()
                 val right = componentsPower.first
-                if (!(left is IMathValue && right is IMathValue)) return IMathValue.getInvalid("power isnt surrounded by values: [$components]:[$componentsNegative]")
+                if (!(left is IMathValue && right is IMathValue)) return IMathValue.getInvalid("power isn't surrounded by values: [$components]:[$componentsNegative]")
                 componentsPower.removeFirst()
                 componentsPower.addFirst(
                     BinaryExpressionComponent(
@@ -390,7 +395,7 @@ private fun parseExpression(expression: String, inBrackets: Boolean): IMathValue
             val currentComponent = iteratorAS.next()
             if (currentComponent == MathOperator.ADD || currentComponent == MathOperator.SUBTRACT) {
                 if (!iteratorAS.hasNext() || componentsFinal.size < 1) return IMathValue.getInvalid(
-                    "$currentComponent, doesn't have componenets either side: [$components]:[$componentsMD]"
+                    "$currentComponent, doesn't have components either side: [$components]:[$componentsMD]"
                 )
                 val next = iteratorAS.next()
                 val last = componentsFinal.last
@@ -422,6 +427,6 @@ private fun parseExpression(expression: String, inBrackets: Boolean): IMathValue
         if (inBrackets) (components.first as IMathValue).setBrackets()
         components.first as IMathValue
     } else {
-        IMathValue.getInvalid("final wasn't a math value, likely invalid: $components")
+        IMathValue.getInvalid("final wasn't a math value, invalid: $components")
     }
 }
