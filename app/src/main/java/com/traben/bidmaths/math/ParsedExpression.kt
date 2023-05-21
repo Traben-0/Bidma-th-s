@@ -165,7 +165,7 @@ private val listOfGoodBackupExpressions = listOf(
  * it resolves all negative numbers into the following MathNumber where appropriate,
  * i.e (2)(+)(-)(2) becomes  (2)(+)(-2)
  *
- * it resolves all instances of indeces (^)
+ * it resolves all instances of indeces (^) in binary expression components
  *
  * */
 private fun parseExpression(expression: String, inBrackets: Boolean): IMathValue {
