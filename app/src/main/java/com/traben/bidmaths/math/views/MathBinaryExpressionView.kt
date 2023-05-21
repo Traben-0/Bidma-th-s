@@ -1,5 +1,6 @@
 package com.traben.bidmaths.math.views
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.util.AttributeSet
 import android.view.LayoutInflater
@@ -14,45 +15,53 @@ import com.traben.bidmaths.math.BinaryExpressionComponent
 import com.traben.bidmaths.math.MathOperator
 import com.traben.bidmaths.math.ParsedExpression
 
+/**
+ * more complex view for binary expression components to be constructed easily
+ *
+ * */
+@SuppressLint("ViewConstructor")//not a concern
 class MathBinaryExpressionView(
-    private val fullExpression: ParsedExpression,
-    private val expression: BinaryExpressionComponent,
+    private val fullExpressionObject: ParsedExpression,
+    private val thisBinaryExpressionObject: BinaryExpressionComponent,
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
 ) : LinearLayout(context, attrs, defStyleAttr) {
 
-    val binding: MathBinaryExpressionBinding
+    private val binding: MathBinaryExpressionBinding
 
     init {
         val inflater = LayoutInflater.from(context)
         binding = MathBinaryExpressionBinding.inflate(inflater, this, true)
 
-        setOperator(expression.operator)
-        update()
+        //setup the operator's view
+        setOperatorView(thisBinaryExpressionObject.operator)
 
+        //get and set the left and right MathValue views
+        updateLeftAndRightMathValueViews()
 
     }
 
 
-    fun update() {
-        setLeft(expression.valueOne.getAsView(fullExpression, context))
-        setRight(expression.valueTwo.getAsView(fullExpression, context))
+    fun updateLeftAndRightMathValueViews() {
+        setLeftValueView(thisBinaryExpressionObject.valueOne.getAsView(fullExpressionObject, context))
+        setRightValueView(thisBinaryExpressionObject.valueTwo.getAsView(fullExpressionObject, context))
     }
 
 
-    private fun setLeft(view: View) {
+    private fun setLeftValueView(view: View) {
         binding.left.removeAllViews()
-        if (expression.hasBrackets)
+        if (thisBinaryExpressionObject.hasBrackets)
             binding.left.addView(MathBracketView(true, context))
         binding.left.addView(view)
     }
 
 
-    private fun setOperator(operator: MathOperator) {
+    private fun setOperatorView(operator: MathOperator) {
         binding.operator.text = operator.toStringPretty()
         binding.operatorShadow.text = binding.operator.text
 
+        //animates the operator
         val animation = AnimationUtils.loadAnimation(context, R.anim.pulse_wobble)
         val randomDuration =
             (500..1500).random() // Random duration between 500 and 1500 milliseconds
@@ -60,53 +69,57 @@ class MathBinaryExpressionView(
         binding.operator.startAnimation(animation)
         binding.operatorShadow.startAnimation(animation)
 
+
         binding.operator.setOnClickListener {
-            if (expression.canResolve() && fullExpression.isNextOperationThisConsideringLeftToRight(
-                    expression
-                )
+            //if this operator is a correct valid choice for the user to pick
+            if (thisBinaryExpressionObject.canResolve()
+                && fullExpressionObject.isNextOperationThisConsideringLeftToRight(thisBinaryExpressionObject)
             ) {
                 //correct operator
+
+                //create and start the animation of the two values "smooshing" together then execute
+                // the code to resolve the expression component
                 val animation2 =
                     AnimationUtils.loadAnimation(context, R.anim.resolve_math)
-
                 val thisPointer = this
                 animation2.setAnimationListener(object :
                     Animation.AnimationListener {
                     override fun onAnimationStart(animation: Animation?) {}
                     override fun onAnimationEnd(animation: Animation?) {
-                        expression.resolve(thisPointer)
-                        if (fullExpression.isCompleted()) {
-                            fullExpression.completeAction.invoke()
-                            fullExpression.completeAction = {}
+                        thisBinaryExpressionObject.resolve(thisPointer)
+                        if (fullExpressionObject.isCompleted()) {
+                            // invokes the action sent to the game by the game fragment
+                            // this can only be executed if that fragment is still valid
+                            fullExpressionObject.completeAction.invoke()
+                            //clear this to alleviate memory leak concerns
+                            fullExpressionObject.completeAction = {}
                         }
                     }
-
                     override fun onAnimationRepeat(animation: Animation?) {}
                 })
                 binding.container.startAnimation(animation2)
             } else {
                 //wrong operator
-                fullExpression.timesAnsweredWrong++
-                val animation2 =
-                    AnimationUtils.loadAnimation(context, R.anim.shake)
+                fullExpressionObject.timesAnsweredWrong++
+                val animation2 = AnimationUtils.loadAnimation(context, R.anim.shake)
                 binding.container.startAnimation(animation2)
                 MathGame.currentMathGame?.updateHint(operator)
             }
-            //expression.resolve(parent?.parent?.parent)
         }
     }
 
-    private fun setRight(view: View) {
+    // this is a bit more involved than the left view
+    private fun setRightValueView(view: View) {
         binding.right.removeAllViews()
-        if (expression.operator == MathOperator.POWER) {
+        // if the operator is an index translate and scale the resulting right hand view
+        if (thisBinaryExpressionObject.operator == MathOperator.POWER) {
             view.y -= 25
             view.scaleY = 0.75f
             view.scaleX = 0.75f
             view.minimumWidth = 0
-            //view.setOnClickListener { expression.resolve(parent?.parent?.parent) }
         }
         binding.right.addView(view)
-        if (expression.hasBrackets)
+        if (thisBinaryExpressionObject.hasBrackets)
             binding.right.addView(MathBracketView(false, context))
     }
 }

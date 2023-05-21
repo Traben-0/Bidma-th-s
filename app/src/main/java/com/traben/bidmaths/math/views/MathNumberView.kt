@@ -1,5 +1,6 @@
 package com.traben.bidmaths.math.views
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.util.AttributeSet
 import android.view.LayoutInflater
@@ -7,6 +8,11 @@ import android.widget.LinearLayout
 import com.traben.bidmaths.databinding.MathNumberBinding
 import com.traben.bidmaths.math.MathNumber
 
+/**
+ * simple view for expression number to be constructed quickly with just a MathNumber
+ * */
+
+@SuppressLint("ViewConstructor")//not a concern
 class MathNumberView(
     number: MathNumber,
     context: Context,
@@ -19,11 +25,8 @@ class MathNumberView(
     init {
         val inflater = LayoutInflater.from(context)
         binding = MathNumberBinding.inflate(inflater, this, true)
-        if (number.hasBrackets) {
-            binding.number.text = "(${number})"
-        } else {
-            binding.number.text = number.toString()
-        }
+
+        binding.number.text = number.toString()
         binding.numberShadow.text = binding.number.text
     }
 

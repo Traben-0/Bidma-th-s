@@ -1,11 +1,17 @@
 package com.traben.bidmaths.math.views
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.widget.LinearLayout
 import com.traben.bidmaths.databinding.MathNumberBinding
 
+
+/**
+ * simple view for expression brackets to be constructed quickly with a boolean
+ * */
+@SuppressLint("ViewConstructor")//not a concern
 class MathBracketView(
     isLeft: Boolean,
     context: Context,

@@ -95,7 +95,7 @@ class BinaryExpressionComponent(
         if (parentView is MathBinaryExpressionView) {
             //if this expression is nested within another we need to tell that expression view to
             // update its views to reflect the now resolved value within it
-            parentView.update()
+            parentView.updateLeftAndRightMathValueViews()
         } else {
             //otherwise if this is the top level expression of the tree simply replace the
             //MathBinaryExpressionView with the final resolved number view
