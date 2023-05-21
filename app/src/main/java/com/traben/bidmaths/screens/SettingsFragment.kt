@@ -110,10 +110,10 @@ class SettingsFragment : PreferenceFragmentCompat() {
         context: Context
     ) {
         val builder = AlertDialog.Builder(context)
-        builder.setTitle("Confirmation")
+        builder.setTitle(getString(R.string.confirm))
             .setMessage(message)
-            .setPositiveButton("Yes", yes)
-            .setNegativeButton("No", no)
+            .setPositiveButton(getString(R.string.yes), yes)
+            .setNegativeButton(getString(R.string.no), no)
         builder.create().show()
 
     }

@@ -9,8 +9,6 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
-import com.traben.bidmaths.ActivityFragmentArgs
-import com.traben.bidmaths.ActivityFragmentDirections
 import com.traben.bidmaths.MathGame
 import com.traben.bidmaths.R
 import com.traben.bidmaths.databinding.FragmentActivityBinding
@@ -61,7 +59,9 @@ class ActivityFragment : Fragment() {
                 //this lambda is run when the equation is completed
                 binding.nextButton.isEnabled = true
                 binding.nextButton.text =
-                    if (MathGame.currentMathGame!!.isLastGame(args.gameIteration)) "Finish" else "Next"
+                    if (MathGame.currentMathGame!!.isLastGame(args.gameIteration))
+                        getString(R.string.finish) else getString(R.string.next)
+
                 if (MathGame.currentMathGame!!.isLastGame(args.gameIteration)) {
                     binding.nextButton.setOnClickListener {
                         findNavController().navigate(ActivityFragmentDirections.actionFinishGame())

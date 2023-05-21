@@ -1,6 +1,6 @@
 <PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <!-- Switches Category -->
+
     <PreferenceCategory app:title="Game">
 
         <SwitchPreferenceCompat
@@ -16,7 +16,7 @@
 
     </PreferenceCategory>
 
-    <!-- Button Category -->
+
     <PreferenceCategory app:title="Leaderboard">
 
         <SwitchPreferenceCompat

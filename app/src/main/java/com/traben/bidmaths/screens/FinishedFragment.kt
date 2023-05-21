@@ -18,7 +18,6 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.traben.bidmaths.*
-import com.traben.bidmaths.FinishedFragmentDirections
 import com.traben.bidmaths.databinding.FragmentFinishedBinding
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -114,7 +113,7 @@ class FinishedFragment : Fragment() {
                 button.isEnabled = false
                 binding.submitText.isEnabled = false
             } else {
-                Toast.makeText(requireContext(), "Name cannot be empty for Leaderboard.", Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), getString(R.string.leader_board_needs_name), Toast.LENGTH_SHORT).show()
             }
         }
 
@@ -197,7 +196,7 @@ class FinishedFragment : Fragment() {
             shareIntent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
             shareIntent.putExtra(Intent.EXTRA_STREAM, imageUri)
             shareIntent.type = "image/*"
-            startActivity(Intent.createChooser(shareIntent, "Share via"))
+            startActivity(Intent.createChooser(shareIntent, getString(R.string.share)))
         }
     }
 

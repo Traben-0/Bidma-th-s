@@ -22,6 +22,9 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        //allows out of context string resource getting
+        getStringInvoker = {getString(it)}
+
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
@@ -72,4 +75,11 @@ class MainActivity : AppCompatActivity() {
         return !isPortrait
     }
 
+    companion object{
+
+        private var getStringInvoker : (Int) -> String = {it.toString()}
+        fun getString(key:Int) : String{
+            return getStringInvoker.invoke(key)
+        }
+    }
 }

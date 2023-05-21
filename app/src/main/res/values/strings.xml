@@ -2,41 +2,41 @@
     <string name="app_name">Bidma(th)s</string>
     <string name="action_settings">Settings</string>
     <!-- Strings used for fragments for navigation -->
-    <string name="first_fragment_label">First Fragment</string>
-    <string name="second_fragment_label">Second Fragment</string>
+    <string name="first_fragment_label">Bidma(th)s</string>
+    <string name="second_fragment_label">Solve the expression!</string>
     <string name="next">Next</string>
     <string name="previous">Previous</string>
 
-    <string name="hello_first_fragment">Hello first fragment</string>
-    <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
-    <!-- Preference Titles -->
-    <string name="messages_header">Messages</string>
-    <string name="sync_header">Sync</string>
-
-    <!-- Messages Preferences -->
-    <string name="signature_title">Your signature</string>
-    <string name="reply_title">Default reply action</string>
-
-    <!-- Sync Preferences -->
-    <string name="sync_title">Sync email periodically</string>
-    <string name="attachment_title">Download incoming attachments</string>
-    <string name="attachment_summary_on">Automatically download attachments for incoming emails
-    </string>
-    <string name="attachment_summary_off">Only download attachments when manually requested</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
 
 
     <string name="delete_leaderboard_sure">Are you sure you want to reset the leaderboard?</string>
     <string name="delete_leaderboard_success">Leaderboard reset.</string>
-    <string name=""></string>
-    <string name=""></string>
-    <string name=""></string>
-    <string name=""></string>
-    <string name=""></string>
-    <string name=""></string>
-    <string name=""></string>
-    <string name=""></string>
+    <string name="finish">Finish</string>
+    <string name="share">Share via</string>
+    <string name="leader_board_needs_name">Name cannot be empty for Leaderboard.</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+    <string name="confirm">Confirmation</string>
+
+    <string name="hint_bracket">Are there any brackets that need to be completed first?</string>
+    <string name="hint_right_left">Are you solving from the left to the right?</string>
+    <string name="hint_next_power">Indices (^) go before Division, Multiplication, Addition, and Subtraction.</string>
+    <string name="hint_next_multiply">Multiplication and Division must always be done before adding and subtracting values.</string>
+    <string name="hint_not_plus">Remember you cannot add or subtract numbers if they need to be Multiplied or Divided first, you must also resolve any (Brackets) and ^Indeces.</string>
+    <string name="hint_not_multiply">Remember (Brackets) and ^Indeces go before Multiplication and Division</string>
+    <string name="hint_not_power">Something is preventing this Index (^) from resolving, perhaps the index value itself is not resolved, or there are brackets needing resolution first.</string>
+    <string name="hint_general">Remember the order of operations: Brackets -> Orders -> Division and Multiplication -> Addition and Subtraction</string>
+    <string name="hint">Hint: </string>
+
+
+    <string name="equation">equation</string>
+    <string name="timesWrong">timesWrong</string>
+    <string name="average">Average</string>
+    <string name="all_rounds">All rounds</string>
+    <string name="best_round">Best round</string>
+    <string name="worst_round">Worst round</string>
+    <string name="round">&gt; Round</string>
+
 
     <string name="leader_board_details">&lt; more details &gt;</string>
     <string name="empty_leaderboard">No entries yet :)\nplay a game and save your score</string>

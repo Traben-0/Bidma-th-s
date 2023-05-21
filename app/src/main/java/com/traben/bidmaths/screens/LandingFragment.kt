@@ -11,7 +11,6 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
-import com.traben.bidmaths.LandingFragmentDirections
 import com.traben.bidmaths.MainActivity
 import com.traben.bidmaths.MathGame
 import com.traben.bidmaths.R

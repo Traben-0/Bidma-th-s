@@ -97,20 +97,24 @@ class MathGame(val equations: List<ParsedExpression>) {
 
 
         }
+
+        val equationText = MainActivity.getString(R.string.equation)
+        val timesWrongText = MainActivity.getString(R.string.timesWrong)
+
         val output = java.lang.StringBuilder(
             """
-                Best round:
-                 - equation:    $bestEquation
-                 - timesWrong:  $best
+                ${MainActivity.getString(R.string.best_round)}:
+                 - $equationText:    $bestEquation
+                 - $timesWrongText:  $best
                 
-                Worst round:
-                 - equation:    $worstEquation
-                 - timesWrong:  $worst
+                ${MainActivity.getString(R.string.worst_round)}:
+                 - $equationText:    $worstEquation
+                 - $timesWrongText:  $worst
                  
-                Average:
-                 - timesWrong:  ${averageScore()}
+                ${MainActivity.getString(R.string.average)}:
+                 - $timesWrongText:  ${averageScore()}
                  
-                All rounds:
+                ${MainActivity.getString(R.string.all_rounds)}:
             """.trimIndent()
         )
         var i = 0
@@ -119,9 +123,9 @@ class MathGame(val equations: List<ParsedExpression>) {
             output.append(
                 """
                 
-                > Round #$i:
-                   - equation:    ${entry.key}
-                   - timesWrong:  ${entry.value}
+                > ${MainActivity.getString(R.string.round)} #$i:
+                   - $equationText:    ${entry.key}
+                   - $timesWrongText:  ${entry.value}
                  
             """.trimIndent()
             )
@@ -187,18 +191,19 @@ class MathGame(val equations: List<ParsedExpression>) {
 
     // an enum containing various possible hints
     // the variations allow for a context driven hint system
-    enum class GameHint(private val message: String) {
-        BRACKET_HINT("Are there any brackets that need to be completed first?"),
-        LEFT_TO_RIGHT_HINT("Are you solving from the left to the right?"),
-        NEXT_IS_POWER("Indices (^) go before Division, Multiplication, Addition, & Subtraction."),
-        NEXT_IS_MULTIPLY("Multiplication and Division must always be done before adding and subtracting values."),
-        NOT_PLUS("Remember you cannot add or subtract numbers if they need to be Multiplied or Divided first, you must also resolve any (Brackets) & ^Indeces."),
-        NOT_MULTIPLY("Remember (Brackets) & ^Indeces go before Multiplication & Division"),
-        NOT_POWER("Something is preventing this Index (^) from resolving, perhaps the index value itself isn't resolved, or there are brackets needing resolution first."),
-        GENERAL("Remember the order of operations: Brackets -> Orders -> Division & Multiplication -> Addition & Subtraction");
+    enum class GameHint(private val messageId: Int) {
+        BRACKET_HINT(R.string.hint_bracket),
+        LEFT_TO_RIGHT_HINT(R.string.hint_right_left),
+        NEXT_IS_POWER(R.string.hint_next_power),
+        NEXT_IS_MULTIPLY(R.string.hint_next_multiply),
+        NOT_PLUS(R.string.hint_not_plus),
+        NOT_MULTIPLY(R.string.hint_not_multiply),
+        NOT_POWER(R.string.hint_not_power),
+        GENERAL(R.string.hint_general);
 
         fun getMessage(): String {
-            return "Hint: ${this.message}"
+
+            return MainActivity.getString(R.string.hint)+MainActivity.getString(messageId)
         }
 
         companion object {
