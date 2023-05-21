@@ -1,4 +1,4 @@
-package com.traben.bidmaths
+package com.traben.bidmaths.screens
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -11,13 +11,18 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import com.traben.bidmaths.LandingFragmentDirections
+import com.traben.bidmaths.MainActivity
+import com.traben.bidmaths.MathGame
+import com.traben.bidmaths.R
 import com.traben.bidmaths.databinding.FragmentLandingBinding
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 /**
- * A simple [Fragment] subclass as the default destination in the navigation.
+ * The landing/ main menu fragment for the app
+ * primarily functions as a navigation space
  */
 class LandingFragment : Fragment() {
 
@@ -30,30 +35,38 @@ class LandingFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
 
         _binding = FragmentLandingBinding.inflate(inflater, container, false)
 
+        // the layout is structured from two halves inside a linear layout
+        // they are designed to display nicely in both landscape and portrait mode
+        // but we must tell the LinearLayout to change its orientation
         if (requireActivity() is MainActivity
             && (requireActivity() as MainActivity).isLandscape(requireContext())
         ) {
             binding.root.orientation = LinearLayout.HORIZONTAL
         }
 
+
+        //set the buttons to start a game loop when clicked
         binding.easyButton.setOnClickListener {
-            launchGameMode(MathGame.GameMode.EASY)
+            launchGameMode(MathGame.GameDifficultyMode.EASY)
         }
         binding.mediumButton.setOnClickListener {
-            launchGameMode(MathGame.GameMode.MEDIUM)
+            launchGameMode(MathGame.GameDifficultyMode.MEDIUM)
         }
         binding.hardButton.setOnClickListener {
-            launchGameMode(MathGame.GameMode.HARD)
+            launchGameMode(MathGame.GameDifficultyMode.HARD)
         }
+
+        // open the leaderboard
         if (SettingsFragment.hideLeaderboard) binding.leaderBoardButton.isVisible = false
         binding.leaderBoardButton.setOnClickListener {
             findNavController().navigate(LandingFragmentDirections.actionOpenLeaderboards())
         }
 
+        //initialise the animation variable started in onResume()
         animation = AnimationUtils.loadAnimation(context, R.anim.pulse_wobble)
         val randomDuration =
             (500..1500).random() // Random duration between 500 and 1500 milliseconds
@@ -65,7 +78,7 @@ class LandingFragment : Fragment() {
     }
 
 
-    private fun launchGameMode(mode: MathGame.GameMode) {
+    private fun launchGameMode(mode: MathGame.GameDifficultyMode) {
         lifecycleScope.launch(Dispatchers.IO) {
             MathGame.loadGameMode(mode)
             withContext(Dispatchers.Main) {
@@ -77,6 +90,7 @@ class LandingFragment : Fragment() {
     }
 
 
+    //animation started in onResume() as it appears to be stopped automatically in onPause()
     private var animation: Animation? = null
     override fun onResume() {
         super.onResume()

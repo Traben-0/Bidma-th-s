@@ -1,4 +1,4 @@
-package com.traben.bidmaths.maths.views
+package com.traben.bidmaths.math.views
 
 import android.content.Context
 import android.util.AttributeSet
@@ -10,13 +10,13 @@ import android.widget.LinearLayout
 import com.traben.bidmaths.MathGame
 import com.traben.bidmaths.R
 import com.traben.bidmaths.databinding.MathBinaryExpressionBinding
-import com.traben.bidmaths.maths.MathBinaryExpressionComponent
-import com.traben.bidmaths.maths.MathOperator
-import com.traben.bidmaths.maths.ParsedMathEquation
+import com.traben.bidmaths.math.BinaryExpressionComponent
+import com.traben.bidmaths.math.MathOperator
+import com.traben.bidmaths.math.ParsedEquation
 
 class MathBinaryExpressionView(
-    private val fullExpression: ParsedMathEquation,
-    private val expression: MathBinaryExpressionComponent,
+    private val fullExpression: ParsedEquation,
+    private val expression: BinaryExpressionComponent,
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0

@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:background="@color/ic_launcher_background"
     android:orientation="vertical"
-    tools:context=".LandingFragment">
+    tools:context=".screens.LandingFragment">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/top_holder"

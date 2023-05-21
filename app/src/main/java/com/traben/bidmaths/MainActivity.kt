@@ -9,6 +9,8 @@ import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import com.traben.bidmaths.databinding.ActivityMainBinding
+import com.traben.bidmaths.screens.PREFERENCES
+import com.traben.bidmaths.screens.SettingsFragment
 
 
 class MainActivity : AppCompatActivity() {
@@ -23,6 +25,7 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        //initialise the static variables setup in SettingsFragment's companion for ease of use
         SettingsFragment.initSettings(getSharedPreferences(PREFERENCES, Context.MODE_PRIVATE))
 
         setSupportActionBar(binding.toolbar)
@@ -59,9 +62,11 @@ class MainActivity : AppCompatActivity() {
                 || super.onSupportNavigateUp()
     }
 
+    // this method was sourced from stack overflow
+    // simply detects the display orientation
     fun isLandscape(context: Context): Boolean {
         val windowManager = context.getSystemService(WINDOW_SERVICE) as WindowManager
-        val display: Display = windowManager.defaultDisplay
+        @Suppress("DEPRECATION") val display: Display = windowManager.defaultDisplay
         val rotation: Int = display.rotation
         val isPortrait = rotation == Surface.ROTATION_0 || rotation == Surface.ROTATION_180
         return !isPortrait

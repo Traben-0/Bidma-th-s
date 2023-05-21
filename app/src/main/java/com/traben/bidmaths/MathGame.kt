@@ -1,12 +1,18 @@
 package com.traben.bidmaths
 
-import com.traben.bidmaths.maths.MathBinaryExpressionComponent
-import com.traben.bidmaths.maths.MathOperator
-import com.traben.bidmaths.maths.ParsedMathEquation
+import com.traben.bidmaths.math.BinaryExpressionComponent
+import com.traben.bidmaths.math.MathOperator
+import com.traben.bidmaths.math.ParsedEquation
+import com.traben.bidmaths.screens.SettingsFragment
 import kotlin.math.roundToInt
 import kotlin.random.Random
 
-class MathGame(val equations: List<ParsedMathEquation>) {
+/**
+* this class acts primarily as a resettable singleton
+* this class is tied to the current game loop and performs the loading and scoring functions
+* of the game as well as most of it's non-maths logic
+*/
+class MathGame(val equations: List<ParsedEquation>) {
 
     // used to prevent repeated hints, feels unresponsive to end user
     private var currentHint = GameHint.GENERAL
@@ -24,24 +30,28 @@ class MathGame(val equations: List<ParsedMathEquation>) {
         hintSetter.invoke(currentHint.getMessage())
     }
 
-    var lastEquation: ParsedMathEquation? = null
+    private var lastEquation: ParsedEquation? = null
 
-    fun getEquation(index: Int): ParsedMathEquation {
+    //used by the game loop to retrieve a parsed math object
+    // this object is cached for future interactions with MathGame
+    fun getEquation(index: Int): ParsedEquation {
         lastEquation = equations[index]
         return equations[index]
     }
-
 
     fun isLastGame(iteration: Int): Boolean {
         return equations.size - 1 == iteration
     }
 
-
+    // calculates the players score between 0-100
+    // 3 is an arbitrarily chosen number in the equation it decides how many incorrect inputs a
+    // player can get on average to be pulled down to a 0 score
+    // this would be a KEY value to be tweaked based on user feedback
     fun gameScore(): Int {
         val averageIncorrectPerEquation = averageScore()
         // division number is an arbitrary choice it allows the users
         // to get that many attempts at each question and still get a score between 0-100
-        return 100 - (averageIncorrectPerEquation * 100.0 / 2.25).toInt().coerceAtLeast(0)
+        return 100 - (averageIncorrectPerEquation * 100.0 / 3).toInt().coerceAtLeast(0)
             .coerceAtMost(100)
 
     }
@@ -50,14 +60,20 @@ class MathGame(val equations: List<ParsedMathEquation>) {
         var totalTimesWrong = 0
         for (equation in equations)
             totalTimesWrong += equation.timesAnsweredWrong
-
         return totalTimesWrong.toDouble() / equations.size.toDouble()
     }
 
+    // parses the score 0-100 as a typical school grading score "F-" -> "A+"
     fun scoreGrade(): String {
         return scoreToGrade(gameScore())
     }
 
+    // this collates the scores of an entire game into a report string that is stored in the
+    // leaderboard database, in the use case of BidMaths being used in a classroom setting via a
+    // teachers tablet it would allow the teacher a detailed account of the students abilities
+    // key information is stored at the top for ease of use, including the best, worst, and average scores
+    // this is not the most efficient storage method but this part of the app doesn't need to be pretty
+    // it is purely designed for functional & concise feedback on the users games
     fun gameResultsDetailedInfo(): String {
         val allEquations = LinkedHashMap<String, Int>()
         var best = Int.MAX_VALUE
@@ -116,6 +132,7 @@ class MathGame(val equations: List<ParsedMathEquation>) {
 
     companion object {
 
+        //listing these allows a simple index lookup to do the work for me
         private val gradesOrdered = listOf(
             "F-", "F", "F+",
             "E-", "E", "E+",
@@ -126,54 +143,32 @@ class MathGame(val equations: List<ParsedMathEquation>) {
             "A-", "A", "A+"
         )
 
+        //a simple index lookup on a pre made list makes this easy
         fun scoreToGrade(score: Int): String {
             val gradeIndex: Double = score.coerceAtLeast(0).coerceAtMost(100) / 5.0
             return gradesOrdered[gradeIndex.roundToInt()]
         }
 
-        private fun loadEasyGame() {
-            lastMode = GameMode.EASY
-            val equationsForGame = mutableListOf<ParsedMathEquation>()
-            for (i in 0..1) {
-                equationsForGame.add(ParsedMathEquation.createRandomExpression(i / 3))
+
+        // this method creates a new instance of MathGame and stores it to the singleton currentMathGame
+        // this is intended to be run outside the main thread and simply directs to the relevant
+        fun loadGameMode(difficultyMode: GameDifficultyMode) {
+            lastMode = difficultyMode
+            val equationsForGame = mutableListOf<ParsedEquation>()
+            //length of game increases with difficulty
+            for (i in 0..difficultyMode.length) {
+                // equation complexity is divided by larger figures for lower difficulties
+                // i is included so overall complexity increases each round no matter the difficulty
+                val equationComplexity = i/difficultyMode.difficultyDivision
+                equationsForGame.add(ParsedEquation.createRandomExpression(equationComplexity))
             }
             currentMathGame = MathGame(equationsForGame)
         }
 
-        private fun loadMediumGame() {
-            lastMode = GameMode.MEDIUM
-            val equationsForGame = mutableListOf<ParsedMathEquation>()
-            for (i in 0..9) {
-                equationsForGame.add(ParsedMathEquation.createRandomExpression(i / 2))
-            }
-            currentMathGame = MathGame(equationsForGame)
-        }
-
-        fun loadHardGame() {
-            lastMode = GameMode.HARD
-            val equationsForGame = mutableListOf<ParsedMathEquation>()
-            for (i in 0..14) {
-                equationsForGame.add(ParsedMathEquation.createRandomExpression(i))
-            }
-            currentMathGame = MathGame(equationsForGame)
-        }
-
-        suspend fun loadGameMode(mode: GameMode) {
-            when (mode) {
-                GameMode.EASY -> loadEasyGame()
-                GameMode.MEDIUM -> loadMediumGame()
-                GameMode.HARD -> loadHardGame()
-            }
-        }
-
-        private var lastMode = GameMode.EASY
+        private var lastMode = GameDifficultyMode.EASY
 
         fun loadNewGameInLastMode() {
-            when (lastMode) {
-                GameMode.EASY -> loadEasyGame()
-                GameMode.MEDIUM -> loadMediumGame()
-                GameMode.HARD -> loadHardGame()
-            }
+            loadGameMode(lastMode)
         }
 
         // the current game as a resettable singleton format
@@ -181,10 +176,13 @@ class MathGame(val equations: List<ParsedMathEquation>) {
     }
 
     // a simple utility enum
-    enum class GameMode {
-        EASY,
-        MEDIUM,
-        HARD
+    enum class GameDifficultyMode(
+        val length: Int,                //difficult games are longer
+        val difficultyDivision : Int    //how much to divide the equation difficulty by
+    ) {
+        EASY(4,3),
+        MEDIUM(9,2),
+        HARD(14,1)
     }
 
     // an enum containing various possible hints
@@ -208,7 +206,7 @@ class MathGame(val equations: List<ParsedMathEquation>) {
             // this function is basically a cheap method of ensuring the hint is different every click
             // even if every other click might repeat randomly
             fun getFromEquationDifferentTo(
-                equation: MathBinaryExpressionComponent?,
+                equation: BinaryExpressionComponent?,
                 clickedOperator: MathOperator,
                 currentHint: GameHint
             ): GameHint {
@@ -221,7 +219,7 @@ class MathGame(val equations: List<ParsedMathEquation>) {
             // contextual information such as the next required move and the wrong move the
             // player just made
             private fun getFromEquation(
-                equation: MathBinaryExpressionComponent?,
+                equation: BinaryExpressionComponent?,
                 clickedOperator: MathOperator
             ): GameHint {
                 if (equation == null) return getHintFromClicked(clickedOperator)
@@ -250,7 +248,7 @@ class MathGame(val equations: List<ParsedMathEquation>) {
             }
 
             //gets a context driven GameHint based on the actual next correct move to be made
-            private fun getHintFromNext(equation: MathBinaryExpressionComponent): GameHint {
+            private fun getHintFromNext(equation: BinaryExpressionComponent): GameHint {
                 return when (equation.operator) {
                     MathOperator.MULTIPLY, MathOperator.DIVIDE -> NEXT_IS_MULTIPLY
                     MathOperator.POWER -> NEXT_IS_POWER

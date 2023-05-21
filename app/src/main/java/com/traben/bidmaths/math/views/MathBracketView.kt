@@ -1,14 +1,13 @@
-package com.traben.bidmaths.maths.views
+package com.traben.bidmaths.math.views
 
 import android.content.Context
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.widget.LinearLayout
 import com.traben.bidmaths.databinding.MathNumberBinding
-import com.traben.bidmaths.maths.MathNumber
 
-class MathNumberView(
-    number: MathNumber,
+class MathBracketView(
+    isLeft: Boolean,
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
@@ -19,13 +18,9 @@ class MathNumberView(
     init {
         val inflater = LayoutInflater.from(context)
         binding = MathNumberBinding.inflate(inflater, this, true)
-        if (number.hasBrackets) {
-            binding.number.text = "(${number})"
-        } else {
-            binding.number.text = number.toString()
-        }
+        binding.number.text = if (isLeft) "(" else ")"
+
         binding.numberShadow.text = binding.number.text
     }
-
 
 }

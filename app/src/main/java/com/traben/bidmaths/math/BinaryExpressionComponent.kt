@@ -1,15 +1,40 @@
-package com.traben.bidmaths.maths
+package com.traben.bidmaths.math
 
 import android.content.Context
 import android.view.View
 import android.view.ViewParent
 import android.widget.LinearLayout
-import com.traben.bidmaths.maths.views.MathBinaryExpressionView
+import com.traben.bidmaths.math.views.MathBinaryExpressionView
 import kotlin.math.absoluteValue
 import kotlin.math.roundToInt
 import kotlin.random.Random
 
-class MathBinaryExpressionComponent(
+/**
+ *  An instance of IMathValue that holds 2 IMathValue's and the math operation that is applied to them
+ *  This object is the basic for a nested binary tree detailing a maths equation and the tree is
+ *  ordered according to the order of operations with the left most lowest unresolved branch being
+ *  first in that order.
+ *
+ *  Illustration of the resultant binary tree for the expression  "2 * 4 - 8 / (4 + 2)"
+ *
+ *                    (-)
+ *                  /     \
+ *                (*)     (/)
+ *               /  \    /   \
+ *              2   4   8   (+)
+ *                         /   \
+ *                        4    2
+ *
+ *  Reading the tree shows the implicit order of operations as you start at the top and solve the
+ *  (-) subtraction expression, you can see the left hand (*) expression isn't resolved so we do that first
+ *  which is (2 * 4) and is first in the order of operations.
+ *  next we solve the right hand side of the (-) which is a division (/) but before the division can
+ *  resolve we need to solve the addition (+), because it was in brackets (4+2).
+ *
+ *  We also utilise this nested binary tree approach to construct the views for this expression in
+ *  the game
+ * */
+class BinaryExpressionComponent(
     val valueOne: IMathValue,
     val operator: MathOperator,
     val valueTwo: IMathValue
@@ -42,7 +67,7 @@ class MathBinaryExpressionComponent(
         return if (isNegative) -result else result
     }
 
-    var resolved: Double? = null
+    private var resolved: Double? = null
 
     override fun isResolved(): Boolean {
         return resolved != null
@@ -75,7 +100,7 @@ class MathBinaryExpressionComponent(
     }
 
 
-    override fun getAsView(expressionObject: ParsedMathEquation, context: Context): View {
+    override fun getAsView(expressionObject: ParsedEquation, context: Context): View {
         if (isResolved()) {
             return MathNumber(resolved!!).getAsView(context)
         }
@@ -83,14 +108,14 @@ class MathBinaryExpressionComponent(
         return MathBinaryExpressionView(expressionObject, this, context)
     }
 
-    fun getNextOperation(): MathBinaryExpressionComponent? {
+    fun getNextOperation(): BinaryExpressionComponent? {
 
-        if (!valueOne.isResolved() && valueOne is MathBinaryExpressionComponent) {
+        if (!valueOne.isResolved() && valueOne is BinaryExpressionComponent) {
             val oneOrNull = valueOne.getNextOperation()
             if (oneOrNull != null)
                 return oneOrNull
         }
-        if (!valueTwo.isResolved() && valueTwo is MathBinaryExpressionComponent) {
+        if (!valueTwo.isResolved() && valueTwo is BinaryExpressionComponent) {
             val twoOrNull = valueTwo.getNextOperation()
             if (twoOrNull != null)
                 return twoOrNull
@@ -104,16 +129,16 @@ class MathBinaryExpressionComponent(
 
     companion object {
 
-        fun getRandom(difficulty: Int, maxDepth: Int): MathBinaryExpressionComponent {
+        fun getRandom(difficulty: Int, maxDepth: Int): BinaryExpressionComponent {
 
-            val op = MathOperator.getRandom(difficulty)
+            val op = MathOperator.getRandom()
             //simplify it to not get stupidly big powers and divisions
             val second = if (op == MathOperator.POWER || op == MathOperator.DIVIDE) {
                 genRandomValueSimple()
             } else {
                 genRandomValue(difficulty, maxDepth)
             }
-            val comp = MathBinaryExpressionComponent(
+            val comp = BinaryExpressionComponent(
                 genRandomValue(difficulty, maxDepth),
                 op,
                 second

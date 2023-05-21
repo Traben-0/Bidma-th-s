@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/landing_fragment"
-        android:name="com.traben.bidmaths.LandingFragment"
+        android:name="com.traben.bidmaths.screens.LandingFragment"
         android:label="Bid Ma(th)s"
         tools:layout="@layout/fragment_landing">
 
@@ -28,7 +28,7 @@
     <fragment
 
         android:id="@+id/game_fragment"
-        android:name="com.traben.bidmaths.ActivityFragment"
+        android:name="com.traben.bidmaths.screens.ActivityFragment"
         android:label="Solve the equation!"
         tools:layout="@layout/fragment_activity">
         <argument
@@ -56,11 +56,11 @@
     </fragment>
     <fragment
         android:id="@+id/settings_fragment"
-        android:name="com.traben.bidmaths.SettingsFragment"
+        android:name="com.traben.bidmaths.screens.SettingsFragment"
         android:label="Settings" />
     <fragment
         android:id="@+id/finished_game_fragment"
-        android:name="com.traben.bidmaths.FinishedFragment"
+        android:name="com.traben.bidmaths.screens.FinishedFragment"
         android:label="Finished">
         <action
             android:id="@+id/action_return_to_landing"
@@ -75,6 +75,6 @@
     </fragment>
     <fragment
         android:id="@+id/leaderboard_fragment"
-        android:name="com.traben.bidmaths.LeaderboardFragment"
+        android:name="com.traben.bidmaths.screens.LeaderboardFragment"
         android:label="Leaderboard" />
 </navigation>

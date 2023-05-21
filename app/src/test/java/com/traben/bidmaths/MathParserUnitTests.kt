@@ -1,6 +1,6 @@
 package com.traben.bidmaths
 
-import com.traben.bidmaths.maths.ParsedMathEquation
+import com.traben.bidmaths.math.ParsedEquation
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Test
@@ -15,7 +15,7 @@ class MathParserUnitTests {
 
     //generic method for testing environment to not be affected heavily by any changes in the process
     private fun testAnswer(expression: String): Float {
-        return ParsedMathEquation.parseExpressionAndPrepare(expression).getAnswer().toFloat()
+        return ParsedEquation.parseExpressionAndPrepare(expression).getAnswer().toFloat()
     }
 
 
@@ -79,8 +79,8 @@ class MathParserUnitTests {
     }
 
     @Test
-    fun bodmas_isCorrect() {
-        //sourced common bodmas trouble problems from the internet
+    fun bidmas_isCorrect() {
+        //sourced common bidmas trouble problems from the internet
         assertEquals(9f, testAnswer("6/2(1+2)"))
         assertEquals(41f, testAnswer("10*4-2*(4^2/4)/2/0.5+9"))
         assertEquals(-18f, testAnswer("-10/(20/4*5/5)*8-2"))
@@ -90,7 +90,7 @@ class MathParserUnitTests {
     }
 
     private fun doesExpressionFail(expression: String): Boolean {
-        return ParsedMathEquation.parseExpressionAndPrepare(expression).getAnswer().isNaN()
+        return ParsedEquation.parseExpressionAndPrepare(expression).getAnswer().isNaN()
     }
 
     @Test
@@ -116,8 +116,12 @@ class MathParserUnitTests {
 
     @Test
     fun random_expression_creation_isCorrect() {
-        for (i in 1..25) {
-            val exp = ParsedMathEquation.createRandomExpression(i)
+        for (i in 1..250) {
+            // note that a soft difficulty for the equations should increase from loop 1 to loop 250
+            // its not a hard defined difficulty but some complexity/length/number size differences should be visible
+            val exp = ParsedEquation.createRandomExpression((i/12.5).toInt())
+            // the print allows a sort of spot check to make sure they look good and they seem to
+            // in general increase in (complexity/length/number size) as expected
             println("random output was: ${exp.validExpression}")
             assertTrue(exp.isValid())
         }

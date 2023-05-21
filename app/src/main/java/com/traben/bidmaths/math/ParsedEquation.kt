@@ -1,13 +1,13 @@
-package com.traben.bidmaths.maths
+package com.traben.bidmaths.math
 
 import android.content.Context
 import android.view.View
 import android.widget.TextView
-import com.traben.bidmaths.SettingsFragment
+import com.traben.bidmaths.screens.SettingsFragment
 import java.util.*
 
 
-class ParsedMathEquation(val validExpression: MathBinaryExpressionComponent?) {
+class ParsedEquation(val validExpression: BinaryExpressionComponent?) {
 
 
     var timesAnsweredWrong: Int = 0
@@ -27,12 +27,12 @@ class ParsedMathEquation(val validExpression: MathBinaryExpressionComponent?) {
     }
 
 
-    fun isNextOperationThisConsideringLeftToRight(operation: MathBinaryExpressionComponent): Boolean {
+    fun isNextOperationThisConsideringLeftToRight(operation: BinaryExpressionComponent): Boolean {
         if (!SettingsFragment.respectLeftRight) return true
         return operation == getNextOperation()
     }
 
-    fun getNextOperation(): MathBinaryExpressionComponent? {
+    fun getNextOperation(): BinaryExpressionComponent? {
         return validExpression?.getNextOperation()
     }
 
@@ -54,9 +54,9 @@ class ParsedMathEquation(val validExpression: MathBinaryExpressionComponent?) {
 
     companion object {
 
-        fun createRandomExpression(difficulty: Int): ParsedMathEquation {
+        fun createRandomExpression(difficulty: Int): ParsedEquation {
             val diff = difficulty.coerceAtLeast(1).coerceAtMost(20)
-            val depth = 1 + difficulty / 5
+            val depth = 1 + diff / 5
             return createRandomExpression(diff, depth, 1)
         }
 
@@ -64,7 +64,7 @@ class ParsedMathEquation(val validExpression: MathBinaryExpressionComponent?) {
             difficulty: Int,
             depth: Int,
             iterations: Int
-        ): ParsedMathEquation {
+        ): ParsedEquation {
             //max 10 attempts at generating a valid random expression
             if (iterations > 10) {
                 // i'm not perfect lets pick from some known good examples as this is hopefully a rare
@@ -73,7 +73,7 @@ class ParsedMathEquation(val validExpression: MathBinaryExpressionComponent?) {
             }
 
             //create a random structured expression
-            val generatedButNotValid = MathBinaryExpressionComponent.getRandom(difficulty, depth)
+            val generatedButNotValid = BinaryExpressionComponent.getRandom(difficulty, depth)
             //now simply abandon it as it is likely not order of operations valid
             // extract its string expression value and then validate that
             generatedButNotValid.hasBrackets = false
@@ -90,14 +90,14 @@ class ParsedMathEquation(val validExpression: MathBinaryExpressionComponent?) {
             }
         }
 
-        fun parseExpressionAndPrepare(expression: String): ParsedMathEquation {
+        fun parseExpressionAndPrepare(expression: String): ParsedEquation {
             if (expression.isBlank()) {
-                return ParsedMathEquation(null)
+                return ParsedEquation(null)
             }
             try {//just in case
                 val parsedResult: IMathValue = parseExpression(expression, false)
-                if (parsedResult.isValid() && parsedResult is MathBinaryExpressionComponent) {
-                    return ParsedMathEquation(parsedResult)
+                if (parsedResult.isValid() && parsedResult is BinaryExpressionComponent) {
+                    return ParsedEquation(parsedResult)
                 } else {
                     println("FAILED: $parsedResult")
                 }
@@ -105,7 +105,7 @@ class ParsedMathEquation(val validExpression: MathBinaryExpressionComponent?) {
                 e.printStackTrace()
                 println("FAILED: ${e.cause}")
             }
-            return ParsedMathEquation(null)
+            return ParsedEquation(null)
         }
 
 
@@ -141,7 +141,7 @@ private fun parseExpression(expression: String, inBrackets: Boolean): IMathValue
         return IMathValue.getInvalid("has illegal characters")
     }
 
-    var components = LinkedList<ParsedMathEquation.IMathComponent>()
+    var components = LinkedList<ParsedEquation.IMathComponent>()
 
     //var isValid = true
     val rollingRead = java.lang.StringBuilder()
@@ -151,7 +151,7 @@ private fun parseExpression(expression: String, inBrackets: Boolean): IMathValue
 
         val currentCharacter = stringIterator.nextChar()
 
-        val operator = MathOperator.get(currentCharacter)
+        val operator = MathOperator.getFromChar(currentCharacter)
         if (operator == MathOperator.NOT_VALID) {
             //add to rolling read and continue
             rollingRead.append(currentCharacter)
@@ -178,7 +178,7 @@ private fun parseExpression(expression: String, inBrackets: Boolean): IMathValue
                     var nesting = 1
                     while (stringIterator.hasNext()) {
                         val currentNestedCharacter = stringIterator.nextChar()
-                        val operatorNested = MathOperator.get(currentNestedCharacter)
+                        val operatorNested = MathOperator.getFromChar(currentNestedCharacter)
 
                         if (operatorNested == MathOperator.BRACKET_OPEN) {
                             nesting++
@@ -235,10 +235,10 @@ private fun parseExpression(expression: String, inBrackets: Boolean): IMathValue
         //todo add checks at each stage for if that step is even required, would cut down on iterations needed
 
         //parse out negative numbers, into inverted ImathValues
-        val componentsNegative = LinkedList<ParsedMathEquation.IMathComponent>()
+        val componentsNegative = LinkedList<ParsedEquation.IMathComponent>()
         val iteratorNegative = components.iterator()
 
-        var nextOverride: ParsedMathEquation.IMathComponent? = null
+        var nextOverride: ParsedEquation.IMathComponent? = null
 
         while (iteratorNegative.hasNext()) {
             val currentComponent = nextOverride ?: iteratorNegative.next()
@@ -281,7 +281,7 @@ private fun parseExpression(expression: String, inBrackets: Boolean): IMathValue
 
         //resolve powers into binary expression component
         //check these right to left as that is the ordering for powers when written with ^ notation
-        val componentsPower = LinkedList<ParsedMathEquation.IMathComponent>()
+        val componentsPower = LinkedList<ParsedEquation.IMathComponent>()
         val iteratorPower = componentsNegative.reversed().iterator()
         while (iteratorPower.hasNext()) {
             val currentComponent = iteratorPower.next()
@@ -294,7 +294,7 @@ private fun parseExpression(expression: String, inBrackets: Boolean): IMathValue
                 if (!(left is IMathValue && right is IMathValue)) return IMathValue.getInvalid("power isnt surrounded by values: [$components]:[$componentsNegative]")
                 componentsPower.removeFirst()
                 componentsPower.addFirst(
-                    MathBinaryExpressionComponent(
+                    BinaryExpressionComponent(
                         left,
                         currentComponent as MathOperator,
                         right
@@ -307,7 +307,7 @@ private fun parseExpression(expression: String, inBrackets: Boolean): IMathValue
 
 
         //resolve * / into binary expression component
-        val componentsMD = LinkedList<ParsedMathEquation.IMathComponent>()
+        val componentsMD = LinkedList<ParsedEquation.IMathComponent>()
         val iteratorMD = componentsPower.iterator()
         while (iteratorMD.hasNext()) {
             val currentComponent = iteratorMD.next()
@@ -318,7 +318,7 @@ private fun parseExpression(expression: String, inBrackets: Boolean): IMathValue
                 if (!(next is IMathValue && last is IMathValue)) return IMathValue.getInvalid("$currentComponent, isn't affecting values only: [$components]:[$componentsPower]")
                 componentsMD.removeLast()
                 componentsMD.add(
-                    MathBinaryExpressionComponent(
+                    BinaryExpressionComponent(
                         last,
                         currentComponent as MathOperator,
                         next
@@ -330,7 +330,7 @@ private fun parseExpression(expression: String, inBrackets: Boolean): IMathValue
         }
 
         //resolve + - into binary expression components
-        val componentsFinal = LinkedList<ParsedMathEquation.IMathComponent>()
+        val componentsFinal = LinkedList<ParsedEquation.IMathComponent>()
         val iteratorAS = componentsMD.iterator()
         while (iteratorAS.hasNext()) {
             val currentComponent = iteratorAS.next()
@@ -343,7 +343,7 @@ private fun parseExpression(expression: String, inBrackets: Boolean): IMathValue
                 if (!(next is IMathValue && last is IMathValue)) return IMathValue.getInvalid("$currentComponent, isn't affecting values only: [$components]:[$componentsMD]")
                 componentsFinal.removeLast()
                 componentsFinal.add(
-                    MathBinaryExpressionComponent(
+                    BinaryExpressionComponent(
                         last,
                         currentComponent as MathOperator,
                         next

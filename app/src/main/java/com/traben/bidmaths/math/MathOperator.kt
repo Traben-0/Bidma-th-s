@@ -1,19 +1,29 @@
-package com.traben.bidmaths.maths
+package com.traben.bidmaths.math
 
 import kotlin.math.pow
-import kotlin.random.Random
 
-enum class MathOperator : ParsedMathEquation.IMathComponent {
+/**
+ * this class represents all non number values in a valid math equation for this app
+ * this is used for functionality in the BinaryExpressionComonents
+ * but is also primarily used in the validation and creation steps of the math parsing
+ *
+ * the FUNCTIONAL values have use in the final math equation object
+ * the NON FUNCTIONAL values are only utilized during equation parsing
+ * */
+enum class MathOperator : ParsedEquation.IMathComponent {
+    //FUNCTIONAL
     ADD,
     SUBTRACT,
-    START,
     MULTIPLY,
     DIVIDE,
+    POWER,
+
+    //NON FUNCTIONAL
     BRACKET_OPEN,
     BRACKET_CLOSED,
-    POWER,
     NOT_VALID;
 
+    //this method performs the given math Operation on the two given inputs
     fun performOperation(valueOne: IMathValue, valueTwo: IMathValue): Double {
 
         return when (this) {
@@ -33,6 +43,7 @@ enum class MathOperator : ParsedMathEquation.IMathComponent {
 
 
             }
+            //all other values are NON FUNCTIONAL
             else -> Double.NaN
         }
 
@@ -49,6 +60,8 @@ enum class MathOperator : ParsedMathEquation.IMathComponent {
         }
     }
 
+    // uses the common syntax for multiplication and division
+    // used for display
     fun toStringPretty(): String {
         return when (this) {
             ADD -> "+"
@@ -63,27 +76,19 @@ enum class MathOperator : ParsedMathEquation.IMathComponent {
 
     companion object {
 
-        fun getRandom(difficulty: Int): MathOperator {
-            //todo factor in difficulty
-            return when (Random.nextInt(5)) {
-                0 -> ADD
-                1 -> SUBTRACT
-                2 -> MULTIPLY
-                3 -> DIVIDE
-                4 -> POWER
-                else -> ADD
-            }
+        fun getRandom(): MathOperator {
+            return listOf(ADD,SUBTRACT,MULTIPLY,DIVIDE,POWER).random()
         }
 
-        fun get(testChar: Char): MathOperator {
+        fun getFromChar(testChar: Char): MathOperator {
             return when (testChar) {
                 '+' -> ADD
                 '-' -> SUBTRACT
                 '*' -> MULTIPLY
                 '/' -> DIVIDE
+                '^' -> POWER
                 '(' -> BRACKET_OPEN
                 ')' -> BRACKET_CLOSED
-                '^' -> POWER
                 else -> NOT_VALID
             }
         }

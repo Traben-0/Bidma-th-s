@@ -1,4 +1,4 @@
-package com.traben.bidmaths
+package com.traben.bidmaths.screens
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -9,12 +9,17 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
+import com.traben.bidmaths.ActivityFragmentArgs
+import com.traben.bidmaths.ActivityFragmentDirections
+import com.traben.bidmaths.MathGame
+import com.traben.bidmaths.R
 import com.traben.bidmaths.databinding.FragmentActivityBinding
-import com.traben.bidmaths.maths.ParsedMathEquation
+import com.traben.bidmaths.math.ParsedEquation
 
 
 /**
- * A simple [Fragment] subclass as the second destination in the navigation.
+ * contains the main game loop
+ * functionally this fragment handles a single ParsedMathEquation and its solution activity
  */
 class ActivityFragment : Fragment() {
 
@@ -25,12 +30,12 @@ class ActivityFragment : Fragment() {
     private val binding get() = _binding!!
 
 
-    val args: ActivityFragmentArgs by navArgs()
+    private val args: ActivityFragmentArgs by navArgs()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
 
         _binding = FragmentActivityBinding.inflate(inflater, container, false)
 
@@ -81,6 +86,7 @@ class ActivityFragment : Fragment() {
             findNavController().navigate(ActivityFragmentDirections.actionReturnToLanding())
         }
         //this hides the options menu
+        @Suppress("DEPRECATION")
         setHasOptionsMenu(true)
         return binding.root
 
@@ -89,11 +95,12 @@ class ActivityFragment : Fragment() {
     //this hides the options menu
     @Deprecated("Deprecated in Java")
     override fun onPrepareOptionsMenu(menu: Menu) {
+        @Suppress("DEPRECATION")
         super.onPrepareOptionsMenu(menu)
         menu.clear()
     }
 
-    lateinit var equation: ParsedMathEquation
+    private lateinit var equation: ParsedEquation
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

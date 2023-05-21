@@ -1,4 +1,4 @@
-package com.traben.bidmaths
+package com.traben.bidmaths.screens
 
 import android.app.AlertDialog
 import android.content.Context
@@ -14,7 +14,8 @@ import androidx.lifecycle.lifecycleScope
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import androidx.room.Room
-import com.traben.bidmaths.leaderboard.LeaderBoard
+import com.traben.bidmaths.LeaderBoard
+import com.traben.bidmaths.R
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
@@ -24,22 +25,27 @@ const val LEFT_TO_RIGHT_KEY = "respect_left_to_right"
 const val HINT_KEY = "enable_hints"
 const val HIDE_LEADERBOARD_KEY = "leader_board_hidden"
 
+/**
+ * A settings fragments generated thanks to PreferenceFragmentCompat()
+ * this provides a very simple yet formal looking settings screen
+ * this conflict in style is by design as the settings screen is never intended to be seen or used
+ * by children, which is what the rest of the fragments are stylistically designed around
+ *
+ * */
+
 class SettingsFragment : PreferenceFragmentCompat() {
 
     private var sharedPreferences: SharedPreferences? = null
 
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
-        // Retrieve the existing SharedPreferences instance
-        sharedPreferences =
-            requireContext().getSharedPreferences(PREFERENCES, Context.MODE_PRIVATE)
+        // retrieve the existing SharedPreferences instance
+        sharedPreferences = requireContext().getSharedPreferences(PREFERENCES, Context.MODE_PRIVATE)
 
-        // Set the existing SharedPreferences instance to the preference manager
+        // set the existing SharedPreferences instance to the preference manager
         preferenceManager.sharedPreferencesName = PREFERENCES
         preferenceManager.sharedPreferencesMode = Context.MODE_PRIVATE
 
         setPreferencesFromResource(R.xml.root_preferences, rootKey)
-
-
     }
 
     override fun onCreateView(
@@ -47,13 +53,15 @@ class SettingsFragment : PreferenceFragmentCompat() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-
+        //this hides the options button on the toolbar
+        @Suppress("DEPRECATION")
         setHasOptionsMenu(true)
         return super.onCreateView(inflater, container, savedInstanceState)
     }
 
     @Deprecated("Deprecated in Java")
     override fun onPrepareOptionsMenu(menu: Menu) {
+        @Suppress("DEPRECATION")
         super.onPrepareOptionsMenu(menu)
         menu.clear()
     }
@@ -61,16 +69,19 @@ class SettingsFragment : PreferenceFragmentCompat() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        //adds functionality to the reset leaderboard button
+        // it isn't technically a button but it works
         val buttonPreference: Preference? = findPreference("reset_leaderboard")
         buttonPreference?.setOnPreferenceClickListener {
+            //display a generic confirmation box
             displayConfirmationDialogBox(
-                "Are you sure you want to reset the leaderboard?",
+                getString(R.string.delete_leaderboard_sure),
                 { dialog, _ ->
                     lifecycleScope.launch(Dispatchers.IO) {
                         clearDatabase()
                     }
-                    Toast.makeText(requireContext(), "Leaderboard reset.", Toast.LENGTH_SHORT)
-                        .show()
+                    Toast.makeText(requireContext(), getString(R.string.delete_leaderboard_success),
+                        Toast.LENGTH_SHORT).show()
                     dialog.dismiss()
                 },
                 { dialog, _ ->
@@ -81,8 +92,8 @@ class SettingsFragment : PreferenceFragmentCompat() {
         }
     }
 
-
-    private suspend fun clearDatabase() {
+    //clear the database of all values
+    private fun clearDatabase() {
         val database =
             Room.databaseBuilder(requireContext(), LeaderBoard::class.java, "leader-board")
                 .build()
@@ -90,9 +101,10 @@ class SettingsFragment : PreferenceFragmentCompat() {
         database.close()
     }
 
-    //useful elsewhere maybe
+    // the intention of this method is be general use for any future settings
+    // it is only used once currently hence the same parameter value suppression
     private fun displayConfirmationDialogBox(
-        message: String,
+        @Suppress("SameParameterValue") message: String,
         yes: DialogInterface.OnClickListener,
         no: DialogInterface.OnClickListener,
         context: Context
@@ -116,20 +128,23 @@ class SettingsFragment : PreferenceFragmentCompat() {
         preferenceManager.sharedPreferences!!.unregisterOnSharedPreferenceChangeListener(this::onSharedPreferenceChanged)
     }
 
+    //update the companions static booleans
     private fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, key: String) {
         when (key) {
-            LEFT_TO_RIGHT_KEY -> respectLeftRight = sharedPreferences.getBoolean(key, false)
-            HINT_KEY -> hintsEnabled = sharedPreferences.getBoolean(key, false)
+            LEFT_TO_RIGHT_KEY ->    respectLeftRight= sharedPreferences.getBoolean(key, true)
+            HINT_KEY ->             hintsEnabled    = sharedPreferences.getBoolean(key, true)
             HIDE_LEADERBOARD_KEY -> hideLeaderboard = sharedPreferences.getBoolean(key, false)
         }
     }
 
-    companion object {
 
+    companion object {
+        //the companion object houses these static booleans to simplify usage of settings elsewhere
         var respectLeftRight = true
         var hintsEnabled = true
         var hideLeaderboard = false
 
+        //called on MainActivity creation
         fun initSettings(sharedPreferences: SharedPreferences?) {
             respectLeftRight = sharedPreferences?.getBoolean(LEFT_TO_RIGHT_KEY, true) ?: true
             hintsEnabled = sharedPreferences?.getBoolean(HINT_KEY, true) ?: true
