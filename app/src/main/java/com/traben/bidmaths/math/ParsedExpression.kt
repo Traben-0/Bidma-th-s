@@ -163,10 +163,28 @@ private val listOfGoodBackupExpressions = listOf(
  * if the component list is larger it does the following
  *
  * it resolves all negative numbers into the following MathNumber where appropriate,
- * i.e (2)(+)(-)(2) becomes  (2)(+)(-2)
+ * i.e 2,+,-,2 becomes  2,+,-2
  *
- * it resolves all instances of indeces (^) in binary expression components
+ * it resolves all instances of indeces (^) into binary expression components,
+ * indicated by parenthesis, from right to left.
+ * i.e. 2,+,2,^,2,-,2 becomes 2,+,(2^2),-,2
  *
+ * it resolves all instances of multiplication and division into binary expression components,
+ * indicated by parenthesis, from left to right.
+ * i.e. 2,+,2,*,2,-,2 becomes 2,+,(2*2),-,2
+ *
+ * it resolves all instances of addition and subtraction into binary expression components,
+ * indicated by parenthesis, from left to right.
+ * i.e. 2,+,2,-,2,-,2 becomes (((2+2)-2)-2)
+ *
+ * thus a valid expression component list like
+ *      2, *, 4, -, 8, /, (4 + 2)
+ * becomes
+ *      ((2*4)(8/(4+2)))
+ *
+ *
+ *
+ *IMathValue.getInvalid(reason) is returned otherwise
  * */
 private fun parseExpression(expression: String, inBrackets: Boolean): IMathValue {
     //clear spaces
