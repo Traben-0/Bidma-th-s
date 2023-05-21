@@ -52,7 +52,7 @@ class MathNumber(private var number: Double) : IMathValue {
     }
 
     //returns a MathNumberView representing this object
-    override fun getAsView(expressionObject: ParsedEquation, context: Context): View {
+    override fun getAsView(expressionObject: ParsedExpression, context: Context): View {
         return MathNumberView(this, context)
     }
 

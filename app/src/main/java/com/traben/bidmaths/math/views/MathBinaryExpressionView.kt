@@ -12,10 +12,10 @@ import com.traben.bidmaths.R
 import com.traben.bidmaths.databinding.MathBinaryExpressionBinding
 import com.traben.bidmaths.math.BinaryExpressionComponent
 import com.traben.bidmaths.math.MathOperator
-import com.traben.bidmaths.math.ParsedEquation
+import com.traben.bidmaths.math.ParsedExpression
 
 class MathBinaryExpressionView(
-    private val fullExpression: ParsedEquation,
+    private val fullExpression: ParsedExpression,
     private val expression: BinaryExpressionComponent,
     context: Context,
     attrs: AttributeSet? = null,
@@ -77,6 +77,7 @@ class MathBinaryExpressionView(
                         expression.resolve(thisPointer)
                         if (fullExpression.isCompleted()) {
                             fullExpression.completeAction.invoke()
+                            fullExpression.completeAction = {}
                         }
                     }
 

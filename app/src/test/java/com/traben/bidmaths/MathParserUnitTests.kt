@@ -1,6 +1,6 @@
 package com.traben.bidmaths
 
-import com.traben.bidmaths.math.ParsedEquation
+import com.traben.bidmaths.math.ParsedExpression
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Test
@@ -15,7 +15,7 @@ class MathParserUnitTests {
 
     //generic method for testing environment to not be affected heavily by any changes in the process
     private fun testAnswer(expression: String): Float {
-        return ParsedEquation.parseExpressionAndPrepare(expression).getAnswer().toFloat()
+        return ParsedExpression.parseExpressionString(expression).getAnswer().toFloat()
     }
 
 
@@ -90,7 +90,7 @@ class MathParserUnitTests {
     }
 
     private fun doesExpressionFail(expression: String): Boolean {
-        return ParsedEquation.parseExpressionAndPrepare(expression).getAnswer().isNaN()
+        return ParsedExpression.parseExpressionString(expression).getAnswer().isNaN()
     }
 
     @Test
@@ -119,7 +119,7 @@ class MathParserUnitTests {
         for (i in 1..250) {
             // note that a soft difficulty for the equations should increase from loop 1 to loop 250
             // its not a hard defined difficulty but some complexity/length/number size differences should be visible
-            val exp = ParsedEquation.createRandomExpression((i/12.5).toInt())
+            val exp = ParsedExpression.createRandomExpression((i/12.5).toInt())
             // the print allows a sort of spot check to make sure they look good and they seem to
             // in general increase in (complexity/length/number size) as expected
             println("random output was: ${exp.validExpression}")

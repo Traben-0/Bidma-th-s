@@ -6,32 +6,46 @@ import android.widget.TextView
 import com.traben.bidmaths.screens.SettingsFragment
 import java.util.*
 
+/**
+ *
+ * This object holds a fully completed math expression and can be considered the top level/container
+ * of the Binary Expression Tree as outline in BinaryExpressionComponent
+ *
+ * this object also handles interactions with the game loop being the primary face of the expression
+ * */
+class ParsedExpression(val validExpression: BinaryExpressionComponent?) {
 
-class ParsedEquation(val validExpression: BinaryExpressionComponent?) {
-
-
+    //count of times this equations received a wrong answer from the player
     var timesAnsweredWrong: Int = 0
 
+    //top level solving method for the equation
     fun getAnswer(): Double {
         return validExpression?.getValue() ?: Double.NaN
     }
 
+    // checks whether the expression had been solved from a game loop context
     fun isCompleted(): Boolean {
         return validExpression?.isResolved() ?: false
     }
 
+    //holds an action to be invoked when the expression is completed
+    // this holds the potential risk of a memory leak when the held action refers to a now destroyed
+    // View however this actions is only held and used while the view is valid and is blanked once
+    // used
     var completeAction: () -> Unit = {}
 
     fun isValid(): Boolean {
         return !getAnswer().isNaN()
     }
 
-
+    // if the setting is enabled to enforce left to right solving this will check if the chosen
+    // operator is the next correct unresolved choice with regards to left to right solving of the game loop
     fun isNextOperationThisConsideringLeftToRight(operation: BinaryExpressionComponent): Boolean {
         if (!SettingsFragment.respectLeftRight) return true
         return operation == getNextOperation()
     }
 
+    // gets the next operation that can be resolved correctly in the game loop
     fun getNextOperation(): BinaryExpressionComponent? {
         return validExpression?.getNextOperation()
     }
@@ -54,65 +68,66 @@ class ParsedEquation(val validExpression: BinaryExpressionComponent?) {
 
     companion object {
 
-        fun createRandomExpression(difficulty: Int): ParsedEquation {
+        // performs some validation and limitations on these settings
+        // they are arbitrarily chosen and have been tweaked by what feels right
+        fun createRandomExpression(difficulty: Int): ParsedExpression {
             val diff = difficulty.coerceAtLeast(1).coerceAtMost(20)
             val depth = 1 + diff / 5
             return createRandomExpression(diff, depth, 1)
         }
 
+        //creates a random valid ParsedEquation
         private fun createRandomExpression(
-            difficulty: Int,
+            complexity: Int,
             depth: Int,
-            iterations: Int
-        ): ParsedEquation {
+            attempts: Int
+        ): ParsedExpression {
             //max 10 attempts at generating a valid random expression
-            if (iterations > 10) {
-                // i'm not perfect lets pick from some known good examples as this is hopefully a rare
-                println("Failed to create random expression 10 times, defaulting to known expressions")
-                return parseExpressionAndPrepare(listOfGoodBackupExpressions.random())
+            if (attempts > 10) {
+                // i'm not perfect lets pick from some known good examples as this is hopefully a rare occurrence
+                //println("Failed to create random expression 10 times, defaulting to known expressions")
+                return parseExpressionString(listOfGoodBackupExpressions.random())
             }
 
-            //create a random structured expression
-            val generatedButNotValid = BinaryExpressionComponent.getRandom(difficulty, depth)
-            //now simply abandon it as it is likely not order of operations valid
-            // extract its string expression value and then validate that
+            //create a random expression
+            val generatedButNotValid = BinaryExpressionComponent.createRandom(complexity, depth)
+            // now ew simply abandon it as it is not 'order of operations' valid
+            // extract its string expression value and then validate that into a correct binary tree
             generatedButNotValid.hasBrackets = false
             val stringExpression = generatedButNotValid.toString()
 
-            val possiblyValidExpression = parseExpressionAndPrepare(stringExpression)
+            val possiblyValidExpression = parseExpressionString(stringExpression)
             return if (possiblyValidExpression.isValid()) {
+                //return valid expression
                 possiblyValidExpression
             } else {
-                //loop if was invalid
-                println("Failed #$iterations: $stringExpression")
-                //failures are expected as we construct them lazily and could easily have a divide by 0 result in the equation
-                createRandomExpression(difficulty, depth, iterations + 1)
+                //loop this if it was invalid
+                //failures are expected as we construct them lazily and could easily have a divide
+                // by 0 result in the equation or some other niche case
+                createRandomExpression(complexity, depth, attempts + 1)
             }
         }
 
-        fun parseExpressionAndPrepare(expression: String): ParsedEquation {
+        //parses a string expression, ParsedExpression(null) if invalid
+        fun parseExpressionString(expression: String): ParsedExpression {
             if (expression.isBlank()) {
-                return ParsedEquation(null)
+                return ParsedExpression(null)
             }
             try {//just in case
-                val parsedResult: IMathValue = parseExpression(expression, false)
+                val parsedResult = parseExpression(expression, false)
                 if (parsedResult.isValid() && parsedResult is BinaryExpressionComponent) {
-                    return ParsedEquation(parsedResult)
-                } else {
-                    println("FAILED: $parsedResult")
+                    return ParsedExpression(parsedResult)
                 }
-            } catch (e: java.lang.Exception) {
-                e.printStackTrace()
-                println("FAILED: ${e.cause}")
-            }
-            return ParsedEquation(null)
+            } catch (_: java.lang.Exception) { }
+            return ParsedExpression(null)
         }
 
 
-        //parses a string expression, returning null if invalid
+
 
     }
 
+    // a blank interface used for the list when parsing expression strings
     interface IMathComponent
 }
 
@@ -132,6 +147,27 @@ private val listOfGoodBackupExpressions = listOf(
     "7*(-10/9)/3-(-12-16)"
 )
 
+
+/**
+ * This is a fun method to explain :)
+ * this method accepts an expression string and if it is valid returns a valid IMathValue respresenting
+ * it, this being either nested BinaryExpressionComponents or MathNumbers
+ *
+ * to summarise this greatly: ignoring explanations of expression validation
+ *
+ * this compiles a list of IMathComponent's from the expression string, these being numbers,
+ * operators, and iterated returns from parseExpression() for parts of the expression inside brackets
+ *
+ * if the component list has only 1 value it returns that as a MathNumber
+ *
+ * if the component list is larger it does the following
+ *
+ * it resolves all negative numbers into the following MathNumber where appropriate,
+ * i.e (2)(+)(-)(2) becomes  (2)(+)(-2)
+ *
+ * it resolves all instances of indeces (^)
+ *
+ * */
 private fun parseExpression(expression: String, inBrackets: Boolean): IMathValue {
     //clear spaces
     val formattedExpression = expression.replace(" ", "")
@@ -141,15 +177,15 @@ private fun parseExpression(expression: String, inBrackets: Boolean): IMathValue
         return IMathValue.getInvalid("has illegal characters")
     }
 
-    var components = LinkedList<ParsedEquation.IMathComponent>()
+    var components = LinkedList<ParsedExpression.IMathComponent>()
 
-    //var isValid = true
+    //rolling read keeps track of the last few unused iterations of characters
     val rollingRead = java.lang.StringBuilder()
 
-    val stringIterator = formattedExpression.iterator()
-    while (stringIterator.hasNext()) {
+    val expressionStringIterator = formattedExpression.iterator()
+    while (expressionStringIterator.hasNext()) {
 
-        val currentCharacter = stringIterator.nextChar()
+        val currentCharacter = expressionStringIterator.nextChar()
 
         val operator = MathOperator.getFromChar(currentCharacter)
         if (operator == MathOperator.NOT_VALID) {
@@ -176,8 +212,8 @@ private fun parseExpression(expression: String, inBrackets: Boolean): IMathValue
 
                     //utilise rolling read to extract nested expression string
                     var nesting = 1
-                    while (stringIterator.hasNext()) {
-                        val currentNestedCharacter = stringIterator.nextChar()
+                    while (expressionStringIterator.hasNext()) {
+                        val currentNestedCharacter = expressionStringIterator.nextChar()
                         val operatorNested = MathOperator.getFromChar(currentNestedCharacter)
 
                         if (operatorNested == MathOperator.BRACKET_OPEN) {
@@ -235,10 +271,10 @@ private fun parseExpression(expression: String, inBrackets: Boolean): IMathValue
         //todo add checks at each stage for if that step is even required, would cut down on iterations needed
 
         //parse out negative numbers, into inverted ImathValues
-        val componentsNegative = LinkedList<ParsedEquation.IMathComponent>()
+        val componentsNegative = LinkedList<ParsedExpression.IMathComponent>()
         val iteratorNegative = components.iterator()
 
-        var nextOverride: ParsedEquation.IMathComponent? = null
+        var nextOverride: ParsedExpression.IMathComponent? = null
 
         while (iteratorNegative.hasNext()) {
             val currentComponent = nextOverride ?: iteratorNegative.next()
@@ -281,7 +317,7 @@ private fun parseExpression(expression: String, inBrackets: Boolean): IMathValue
 
         //resolve powers into binary expression component
         //check these right to left as that is the ordering for powers when written with ^ notation
-        val componentsPower = LinkedList<ParsedEquation.IMathComponent>()
+        val componentsPower = LinkedList<ParsedExpression.IMathComponent>()
         val iteratorPower = componentsNegative.reversed().iterator()
         while (iteratorPower.hasNext()) {
             val currentComponent = iteratorPower.next()
@@ -307,7 +343,7 @@ private fun parseExpression(expression: String, inBrackets: Boolean): IMathValue
 
 
         //resolve * / into binary expression component
-        val componentsMD = LinkedList<ParsedEquation.IMathComponent>()
+        val componentsMD = LinkedList<ParsedExpression.IMathComponent>()
         val iteratorMD = componentsPower.iterator()
         while (iteratorMD.hasNext()) {
             val currentComponent = iteratorMD.next()
@@ -330,7 +366,7 @@ private fun parseExpression(expression: String, inBrackets: Boolean): IMathValue
         }
 
         //resolve + - into binary expression components
-        val componentsFinal = LinkedList<ParsedEquation.IMathComponent>()
+        val componentsFinal = LinkedList<ParsedExpression.IMathComponent>()
         val iteratorAS = componentsMD.iterator()
         while (iteratorAS.hasNext()) {
             val currentComponent = iteratorAS.next()

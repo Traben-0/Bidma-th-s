@@ -10,7 +10,7 @@ import kotlin.math.pow
  * the FUNCTIONAL values have use in the final math equation object
  * the NON FUNCTIONAL values are only utilized during equation parsing
  * */
-enum class MathOperator : ParsedEquation.IMathComponent {
+enum class MathOperator : ParsedExpression.IMathComponent {
     //FUNCTIONAL
     ADD,
     SUBTRACT,
@@ -76,7 +76,7 @@ enum class MathOperator : ParsedEquation.IMathComponent {
 
     companion object {
 
-        fun getRandom(): MathOperator {
+        fun getRandomFunctional(): MathOperator {
             return listOf(ADD,SUBTRACT,MULTIPLY,DIVIDE,POWER).random()
         }
 

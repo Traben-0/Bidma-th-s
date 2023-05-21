@@ -53,7 +53,7 @@
             android:layout_height="wrap_content"
             android:paddingStart="25dp"
             android:paddingEnd="25dp"
-            android:text="Hint: click on the next operator to be solved: + - × ÷ ^"
+            android:text="Hint: click on the next operator that needs to be solved: + - × ÷ ^"
             android:textAllCaps="false"
             android:textSize="24sp"
             android:textStyle="normal"

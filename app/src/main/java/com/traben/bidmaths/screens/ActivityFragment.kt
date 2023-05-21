@@ -14,7 +14,7 @@ import com.traben.bidmaths.ActivityFragmentDirections
 import com.traben.bidmaths.MathGame
 import com.traben.bidmaths.R
 import com.traben.bidmaths.databinding.FragmentActivityBinding
-import com.traben.bidmaths.math.ParsedEquation
+import com.traben.bidmaths.math.ParsedExpression
 
 
 /**
@@ -100,7 +100,7 @@ class ActivityFragment : Fragment() {
         menu.clear()
     }
 
-    private lateinit var equation: ParsedEquation
+    private lateinit var equation: ParsedExpression
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

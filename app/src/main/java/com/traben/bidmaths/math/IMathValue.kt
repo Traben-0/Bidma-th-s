@@ -8,7 +8,7 @@ import android.widget.TextView
  * interface refering to any object that is valid to be held within a BinaryExpressionComponent
  *  these being, MathNumber & BinaryExpressionComponent itself
  * */
-interface IMathValue : ParsedEquation.IMathComponent {
+interface IMathValue : ParsedExpression.IMathComponent {
 
 
     //negative number handling logic
@@ -34,7 +34,7 @@ interface IMathValue : ParsedEquation.IMathComponent {
     }
 
     //returns this object as a valid View
-    fun getAsView(expressionObject: ParsedEquation, context: Context): View
+    fun getAsView(expressionObject: ParsedExpression, context: Context): View
 
     companion object {
 
@@ -61,7 +61,7 @@ interface IMathValue : ParsedEquation.IMathComponent {
         }
 
 
-        override fun getAsView(expressionObject: ParsedEquation, context: Context): View {
+        override fun getAsView(expressionObject: ParsedExpression, context: Context): View {
             return TextView(context)
         }
 

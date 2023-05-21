@@ -2,7 +2,7 @@ package com.traben.bidmaths
 
 import com.traben.bidmaths.math.BinaryExpressionComponent
 import com.traben.bidmaths.math.MathOperator
-import com.traben.bidmaths.math.ParsedEquation
+import com.traben.bidmaths.math.ParsedExpression
 import com.traben.bidmaths.screens.SettingsFragment
 import kotlin.math.roundToInt
 import kotlin.random.Random
@@ -12,7 +12,7 @@ import kotlin.random.Random
 * this class is tied to the current game loop and performs the loading and scoring functions
 * of the game as well as most of it's non-maths logic
 */
-class MathGame(val equations: List<ParsedEquation>) {
+class MathGame(val equations: List<ParsedExpression>) {
 
     // used to prevent repeated hints, feels unresponsive to end user
     private var currentHint = GameHint.GENERAL
@@ -30,11 +30,11 @@ class MathGame(val equations: List<ParsedEquation>) {
         hintSetter.invoke(currentHint.getMessage())
     }
 
-    private var lastEquation: ParsedEquation? = null
+    private var lastEquation: ParsedExpression? = null
 
     //used by the game loop to retrieve a parsed math object
     // this object is cached for future interactions with MathGame
-    fun getEquation(index: Int): ParsedEquation {
+    fun getEquation(index: Int): ParsedExpression {
         lastEquation = equations[index]
         return equations[index]
     }
@@ -154,13 +154,13 @@ class MathGame(val equations: List<ParsedEquation>) {
         // this is intended to be run outside the main thread and simply directs to the relevant
         fun loadGameMode(difficultyMode: GameDifficultyMode) {
             lastMode = difficultyMode
-            val equationsForGame = mutableListOf<ParsedEquation>()
+            val equationsForGame = mutableListOf<ParsedExpression>()
             //length of game increases with difficulty
             for (i in 0..difficultyMode.length) {
                 // equation complexity is divided by larger figures for lower difficulties
                 // i is included so overall complexity increases each round no matter the difficulty
                 val equationComplexity = i/difficultyMode.difficultyDivision
-                equationsForGame.add(ParsedEquation.createRandomExpression(equationComplexity))
+                equationsForGame.add(ParsedExpression.createRandomExpression(equationComplexity))
             }
             currentMathGame = MathGame(equationsForGame)
         }
