@@ -35,7 +35,7 @@
     <string name="all_rounds">All rounds</string>
     <string name="best_round">Best round</string>
     <string name="worst_round">Worst round</string>
-    <string name="round">&gt; Round</string>
+    <string name="round">Round</string>
 
 
     <string name="leader_board_details">&lt; more details &gt;</string>

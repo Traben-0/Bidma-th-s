@@ -124,8 +124,8 @@ class FinishedFragment : Fragment() {
 //            val scoreText = MathGame.currentMathGame?.scoreGrade()?:"amazing"
 //            shareIntent.putExtra(Intent.EXTRA_TEXT, "My BidMa(th)s score is $scoreText!")
 //            startActivity(Intent.createChooser(shareIntent, "Share via"))
-
             shareScoreImage()
+
         }
 
         //creates an animation for the thumbs up/ down, to be started in onResume
@@ -182,7 +182,9 @@ class FinishedFragment : Fragment() {
                 )
                 return Uri.parse(imagePath)
             }
-        } catch (_: java.lang.Exception) {
+        } catch (e: java.lang.Exception) {
+            e.printStackTrace()
+            binding.logoHidden.visibility = View.INVISIBLE
         }
         return null
     }
